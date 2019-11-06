@@ -4,9 +4,14 @@
 }
 
 body {
-  background: url("/static/images/theyard.jpg");
+  background: url("/static/images/business_school.jpg");
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
+}
+
+.card {
+  opacity: 95%;
 }
 
 .card-signin {

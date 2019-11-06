@@ -1,0 +1,43 @@
+
+body {
+  background: url("/static/images/rac.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+
+}
+
+
+.container-full {
+  margin: 1em;
+}
+
+.card {
+  padding: 1em;
+  opacity: 95%;
+}
+
+
+.dataTables_wrapper .pagination {
+  float:left;
+}
+
+
+#map {
+  width: 100%;
+  height:74vh;
+  padding-top: 1em;
+  margin: auto;
+}
+
+@media only screen and (max-width: 770px) {
+    #map_and_filter_col {
+      display: none;
+    }
+
+    .card {
+      margin: 0 auto;
+      display: inline-block;
+      width: 350px;
+    }
+}

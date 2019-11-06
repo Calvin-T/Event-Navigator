@@ -12,3 +12,12 @@ def login(request):
 
 def register(request):
     return render(request, 'register.html')
+
+def account_details(request):
+    return render(request, 'account-detail.html')
+
+def event_details(request):
+    return render(request, 'event-detail.html')
+
+def org_details(request):
+    return render(request, 'ord-detail.html')

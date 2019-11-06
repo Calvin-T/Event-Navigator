@@ -7,6 +7,11 @@ body {
   background: url("/static/images/stadium.jpg");
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
+}
+
+.card {
+  opacity: 95%;
 }
 
 .card-signin {
