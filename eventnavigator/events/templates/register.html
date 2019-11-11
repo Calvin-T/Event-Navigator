@@ -61,27 +61,27 @@
             </div>
             <div class="card-body">
               <h5 class="card-title text-center">Register</h5>
-              <form class="form-signin">
+              <form class="form-signin" method="POST">
 
                 <div class="form-label-group">
-                  <input type="text" id="inputUserame" class="form-control" placeholder="Username" required autofocus>
-                  <label for="inputUserame">Username</label>
+                  <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="inputUsername" required autofocus>
+                  <label for="inputUsername">Username</label>
                 </div>
 
                 <div class="form-label-group">
-                  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required>
+                  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" name="inputEmail" required>
                   <label for="inputEmail">Email address</label>
                 </div>
 
                 <hr>
 
                 <div class="form-label-group">
-                  <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                  <input type="password" id="inputPassword" class="form-control" placeholder="Password" name ="inputPassword" required>
                   <label for="inputPassword">Password</label>
                 </div>
 
                 <div class="form-label-group">
-                  <input type="password" id="inputConfirmPassword" class="form-control" placeholder="Password" required>
+                  <input type="password" id="inputConfirmPassword" class="form-control" placeholder="Password" name="inputConfirmPassword" required>
                   <label for="inputConfirmPassword">Confirm password</label>
                 </div>
 

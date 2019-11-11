@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'eventnavigator.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'rutgers-app',
+        'USER': 'root',
+        'PASSWORD': 'abcd1234',
+        'HOST': 'rutgers-app-db.cjtme80v0y0w.us-east-2.rds.amazonaws.com',
+        'PORT': '3306',
     }
 }
 
