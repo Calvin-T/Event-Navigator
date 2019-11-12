@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
-from .forms import RegisterForm
-
+from django.db import connection
+from .db_manage import *
 
 def home(request):
     return render(request, 'home.html')
@@ -19,9 +18,7 @@ def login(request):
 @csrf_exempt
 def register(request):
     if request.method == 'POST':
-        print(request.POST.get("inputUsername"))
-        print(request.POST.get("inputPassword"))
-
+        register_account(request)
     return render(request, 'register.html')
 
 def account_details(request):
