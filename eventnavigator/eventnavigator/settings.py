@@ -76,7 +76,14 @@ WSGI_APPLICATION = 'eventnavigator.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'rutgers-app',
+        'USER': 'root',
+        'PASSWORD': 'abcd1234',
+        'HOST': 'rutgers-app-db.cjtme80v0y0w.us-east-2.rds.amazonaws.com',
+        'PORT': '3306',
+    }
 }
 
 
