@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 from .db_manage import *
+from .forms import RegisterForm
 
 def home(request):
     return render(request, 'home.html')
@@ -13,7 +14,7 @@ def organizations(request):
 def login(request):
     return render(request, 'login.html')
 
-# @csrf_except used for 403 errors on POST request, might need another fix.
+# @csrf_exce1pt used for 403 errors on POST request, might need another fix.
 # see: https://tinyurl.com/yggzrqb3
 @csrf_exempt
 def register(request):
