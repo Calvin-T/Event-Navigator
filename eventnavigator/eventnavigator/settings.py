@@ -83,6 +83,9 @@ DATABASES = {
         'PASSWORD': 'abcd1234',
         'HOST': 'rutgers-app-db.cjtme80v0y0w.us-east-2.rds.amazonaws.com',
         'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 

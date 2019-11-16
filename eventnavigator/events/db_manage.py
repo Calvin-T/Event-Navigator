@@ -1,9 +1,9 @@
 from django.db import connection
 from django.contrib import messages
-from .forms import RegisterForm
+from django.db.models import Q
 from django.shortcuts import render
+from .models import *
 
-accounts_table = '`rutgers-app`.accounts'
 events_table = '`rutgers-app`.events'
 
 # RETURN VALUES:
@@ -14,7 +14,7 @@ def register_account(request):
         inputEmail = request.POST.get("inputEmail")
         inputPassword = request.POST.get("inputPassword")
         inputConfirmPassword = request.POST.get("inputConfirmPassword")
-        isOrg = 1 if request.POST.get("isOrg") == "on" else 0
+        isOrg = True if request.POST.get("isOrg") == "on" else False
 
         print('[DEBUG] db_manage.register_account()')
         print('[DEBUG] inputUsername: {}'.format(inputUsername))
@@ -36,15 +36,7 @@ def register_account(request):
             print('[DEBUG] RETURN: -1 (Password != confirmPassword)')
             return register_results
 
-        connection.ensure_connection()
-        cursor = connection.cursor()
-        #checking for duplicates
-        query = 'SELECT exists (SELECT 1 from {table_name} WHERE username = "{0}" OR email = "{1}");'
-        query = query.format(inputUsername, inputEmail, table_name = accounts_table)
-
-        cursor.execute(query)
-        row = cursor.fetchone()
-        if row[0] == 1:
+        if Account.objects.filter(Q(username=inputUsername) | Q(email=inputUsername)).count() > 0:
             messages.error(request,'Error: username/email already exists! Please try again')
             register_results = {
                 'status': "error",
@@ -54,36 +46,26 @@ def register_account(request):
                         'defaultIsOrg': isOrg
                     }
             }
-            registerResults.append(temp)
             print('[DEBUG] RETURN: -1 (Username/Email exists)')
-            cursor.close()
             return register_results
         #inserting new account into db
-        query = 'INSERT INTO {table_name} (username, password, email, isOrg) VALUES ("{0}","{1}","{2}", "{3}");'
-        query = query.format(inputUsername, inputPassword, inputEmail, isOrg, table_name = accounts_table)
+        account = Account(username=inputUsername,password=inputPassword,email=inputEmail,isOrg=isOrg)
+        account.save()
         register_results = {
             'status': "success"
         }
         print('[DEBUG] RETURN: 1')
-        cursor.execute(query)
-        cursor.close()
         return register_results
 
 #Returns ALL evenets in db.
 #TODO: filtering by orgs, removing events from past
 def get_events(request):
-        connection.ensure_connection()
-        cursor = connection.cursor()
-        query = 'SELECT * FROM {table_name}; '.format(table_name = events_table)
-        cursor.execute(query)
-        events = cursor.fetchall()
-        print(events)
+        events = Event.objects.all()
         eventsList = []
         for event in events:
             temp = {
-                'eventName': event[1],
-                'eventHostOrg': event[2]
+                'eventName': event.name,
+                'eventHostOrg': event.host_org
             }
             eventsList.append(temp)
-        cursor.close()
         return eventsList
