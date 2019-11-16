@@ -4,6 +4,7 @@ from .forms import RegisterForm
 from django.shortcuts import render
 
 accounts_table = '`rutgers-app`.accounts'
+events_table = '`rutgers-app`.events'
 
 # RETURN VALUES:
 #   -1 = Unsucessful attempt (username/email already exist, or PW != confirmPW)
@@ -23,9 +24,17 @@ def register_account(request):
         print('[DEBUG] isOrg {}'.format(isOrg))
 
         if inputPassword != inputConfirmPassword:
-            messages.error(request,'Error: password and confirmPassword does not match! Please try again')
+            messages.error(request,'Error: Passwords do not match! Please try again')
+            register_results = {
+                'status': "error",
+                'default_field_values': {
+                        'defaultUsername': inputUsername,
+                        'defaultEmail': inputEmail,
+                        'defaultIsOrg': isOrg
+                    }
+            }
             print('[DEBUG] RETURN: -1 (Password != confirmPassword)')
-            return render(request, 'register.html')
+            return register_results
 
         connection.ensure_connection()
         cursor = connection.cursor()
@@ -36,15 +45,45 @@ def register_account(request):
         cursor.execute(query)
         row = cursor.fetchone()
         if row[0] == 1:
-            cursor.close()
             messages.error(request,'Error: username/email already exists! Please try again')
+            register_results = {
+                'status': "error",
+                'default_field_values': {
+                        'defaultUsername': inputUsername,
+                        'defaultEmail': inputEmail,
+                        'defaultIsOrg': isOrg
+                    }
+            }
+            registerResults.append(temp)
             print('[DEBUG] RETURN: -1 (Username/Email exists)')
-            return render(request, 'register.html')
+            cursor.close()
+            return register_results
         #inserting new account into db
         query = 'INSERT INTO {table_name} (username, password, email, isOrg) VALUES ("{0}","{1}","{2}", "{3}");'
         query = query.format(inputUsername, inputPassword, inputEmail, isOrg, table_name = accounts_table)
+        register_results = {
+            'status': "success"
+        }
+        print('[DEBUG] RETURN: 1')
         cursor.execute(query)
         cursor.close()
-    
-        print('[DEBUG] RETURN: 1')
-        return render(request, 'register.html')
+        return register_results
+
+#Returns ALL evenets in db.
+#TODO: filtering by orgs, removing events from past
+def get_events(request):
+        connection.ensure_connection()
+        cursor = connection.cursor()
+        query = 'SELECT * FROM {table_name}; '.format(table_name = events_table)
+        cursor.execute(query)
+        events = cursor.fetchall()
+        print(events)
+        eventsList = []
+        for event in events:
+            temp = {
+                'eventName': event[1],
+                'eventHostOrg': event[2]
+            }
+            eventsList.append(temp)
+        cursor.close()
+        return eventsList

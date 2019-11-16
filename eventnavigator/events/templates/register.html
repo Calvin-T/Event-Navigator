@@ -59,7 +59,7 @@
 
     {% if messages %}
       {% for message in messages %}
-      <div class="alert alert-success">
+      <div class="alert alert-danger">
         {{ message }}
       </div>
       {% endfor %}
@@ -81,12 +81,12 @@
               <form class="form-signin" method="POST">
 
                 <div class="form-label-group">
-                  <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="inputUsername" required autofocus >
+                  <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="inputUsername"  required autofocus value={{ values.defaultUsername }} >
                   <label for="inputUsername">Username</label>
                 </div>
 
                 <div class="form-label-group">
-                  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" name="inputEmail" required  >
+                  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" name="inputEmail" required value={{ values.defaultEmail }} >
                   <label for="inputEmail">Email address</label>
                 </div>
 
@@ -103,7 +103,7 @@
                 </div>
 
                 <div>
-                  <input type="checkbox" id="isOrgCheckbox" name="isOrg"
+                  <input type="checkbox" id="isOrgCheckbox" name="isOrg" {% if values.defaultIsOrg %} checked {% endif %}
                   >
                   <label for="isOrg"> Student Org?</label>
                 </div>

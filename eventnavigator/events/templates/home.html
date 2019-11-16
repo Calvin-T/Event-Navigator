@@ -73,55 +73,17 @@
             <h1 id="title">Events</h1>
             <table id="events_table" class="table table-hover table-sm">
               <thead>
-                  <tr>
-                      <th>Name</th>
-                      <th>Organization</th>
-                  </tr>
+                  {% for event in events %}
+                     <tr>
+                        <td>{{ event.eventName }}</td>
+                       <td>{{ event.eventHostOrg }}</td>
+                      </tr>
+                  {% endfor %}
               </thead>
               <tbody>
                   <tr>
                       <td>Row 1 Data 1</td>
                       <td>Row 1 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 2 Data 1</td>
-                      <td>Row 2 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 2 Data 1</td>
-                      <td>Row 2 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 2 Data 1</td>
-                      <td>Row 2 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 2 Data 1</td>
-                      <td>Row 2 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 2 Data 1</td>
-                      <td>Row 2 Data 2</td>
-                  </tr>
-                  <tr>
-                      <td>Row 2 Data 1</td>
-                      <td>Row 2 Data 2</td>
                   </tr>
               </tbody>
             </table>
