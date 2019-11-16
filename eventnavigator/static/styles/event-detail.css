@@ -1,0 +1,22 @@
+
+
+.container {
+  margin: 1.5em;
+  color: white;
+}
+
+
+#map {
+  width: 100%;
+  height: 65%;
+  margin: auto;
+  float: right;
+  padding-top: 1.5em;
+}
+
+@media only screen and (max-width: 770px) {
+    #map {
+      height: 50%;
+      margin-bottom: 50vh;
+    }
+}

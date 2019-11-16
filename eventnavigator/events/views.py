@@ -37,4 +37,7 @@ def event_details(request):
     return render(request, 'event-detail.html')
 
 def org_details(request):
-    return render(request, 'ord-detail.html')
+    return render(request, 'org-detail.html')
+
+def add_event(request):
+    return render(request, 'add-event.html')
