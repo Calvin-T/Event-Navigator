@@ -2,14 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
+from django.utils.safestring import mark_safe
 from .db_manage import *
-from .forms import RegisterForm
-
 
 def home(request):
     if request.method == 'GET':
-        eventList = get_events(request);
-    return render(request, 'home.html', {'events': eventList})
+        events = get_events(request);
+    return render(request, 'home.html', {'events': events['eventList'], 'geoData': events['geoData']})
 
 def organizations(request):
     return render(request, 'organizations.html')
@@ -24,7 +23,7 @@ def register(request):
     if request.method == 'POST':
         register_results = register_account(request)
         if register_results['status'] == "error":
-            return render(request, 'register.html', {'values': register_results['default_field_values']})
+            return render(request, 'register.html', {'values': mark_safe(register_results['default_field_values'])})
         else:
             #TODO: add register-successful notification once reaching login.html
             return render(request, 'login.html')

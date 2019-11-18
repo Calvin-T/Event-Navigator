@@ -123,6 +123,29 @@
                 container: 'map',
                 style: 'mapbox://styles/ctang1998/ck2mt2egv0pit1cmwlm1uf1ws'
                 });
+
+                console.log('{{ geoData }}');
+
+                var geoData = JSON.parse('{{ geoData }}'.replace(/&quot;/g,'"'));
+                // see https://docs.mapbox.com/playground/marker/ as reference
+                map.on("load", function(){
+                  map.loadImage("https://i.imgur.com/MK4NUzI.png", function(error,
+                    image){
+                    if(error) throw error;
+                    map.addImage("custom-marker", image);
+                    map.addLayer({
+                      id:"events-map",
+                      type:"symbol",
+                      source:{
+                          type: "geojson",
+                          data: geoData
+                      },
+                      layout: {
+                        "icon-image":"custom-marker",
+                      }
+                    });
+                  });
+                });
                 </script>
               </div>
             </div>
@@ -138,6 +161,7 @@
 </html>
 
 <script>
+
 
 $(document).ready( function () {
   $('#events_table').DataTable( {

@@ -2,13 +2,18 @@ from django.db import connection
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render
+from django.core.serializers import serialize
+
+from geojson import Point, Feature, FeatureCollection
+import json
 from .models import *
 
 events_table = '`rutgers-app`.events'
 
-# RETURN VALUES:
-#   -1 = Unsucessful attempt (username/email already exist, or PW != confirmPW)
-#   1 = account successfully created within function
+# RETURNS: dict containing 'status' and 'default_field_values'
+    # status: results after user attempt to register (succss/fail)
+    # default_field_values: only if 'status' = error,used to populate registration from
+    #                       last attempted registration
 def register_account(request):
         inputUsername = request.POST.get("inputUsername")
         inputEmail = request.POST.get("inputEmail")
@@ -36,7 +41,7 @@ def register_account(request):
             print('[DEBUG] RETURN: -1 (Password != confirmPassword)')
             return register_results
 
-        if Account.objects.filter(Q(username=inputUsername) | Q(email=inputUsername)).count() > 0:
+        if Account.objects.filter(Q(username=inputUsername) | Q(email=inputEmail)).count() > 0:
             messages.error(request,'Error: username/email already exists! Please try again')
             register_results = {
                 'status': "error",
@@ -57,15 +62,35 @@ def register_account(request):
         print('[DEBUG] RETURN: 1')
         return register_results
 
-#Returns ALL evenets in db.
-#TODO: filtering by orgs, removing events from past
+#RETURNS: dic with 'eventList' and 'featureList'
+    # eventList: list of just each events name and host_org
+    # geoData: list of the event's geojson for mapbox
+#TODO: filtering by orgs, removing events from the past
 def get_events(request):
         events = Event.objects.all()
         eventsList = []
+        featureList = []
         for event in events:
             temp = {
                 'eventName': event.name,
                 'eventHostOrg': event.host_org
             }
             eventsList.append(temp)
-        return eventsList
+            tempPoint = Point((float(event.latitude),float(event.longitude)))
+            tempProperties = {
+                "marker-colorv": "#fb0246",
+                "marker-size": "medium",
+                "marker-symbol": "",
+                "EventName": event.name,
+                "Host Org": event.host_org,
+                "Time": event.date.strftime("%m%d%Y, %H:%M")
+            }
+            tempFeature = Feature(geometry=tempPoint, properties=tempProperties)
+            featureList.append(tempFeature)
+        geoData = FeatureCollection(featureList)
+        print(geoData)
+
+        return {
+            'eventList': eventsList,
+            'geoData': geoData
+        }
