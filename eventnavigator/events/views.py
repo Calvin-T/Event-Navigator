@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 from django.utils.safestring import mark_safe
+from django.contrib import messages
 from .db_manage import *
 
 def home(request):
@@ -39,4 +40,13 @@ def org_details(request):
     return render(request, 'org-detail.html')
 
 def add_event(request):
+    if request.method == 'POST':
+        print("POST")
+        create_event_results = post_new_event(request)
+        if create_event_results['status'] == "error":
+            messages.error(request, create_event_results['message'])
+            return render(request, 'add-event.html')
+        else:
+            messages.success(request, 'Successfully created new event!')
+            return render(request, 'add-event.html')
     return render(request, 'add-event.html')
