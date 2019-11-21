@@ -3,14 +3,15 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Event Navigator | Register</title>
+    <title>Event Navigator | Add Event</title>
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
 
     <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/main.css' %}" />
-    <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/register.css' %}" />
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/add-event.css' %}" />
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -29,6 +30,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.0-alpha14/js/tempusdominus-bootstrap-4.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.0-alpha14/css/tempusdominus-bootstrap-4.min.css" />
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1ZcwQ7fqUJq6CqS1O3pjB2vVbxgUFCZM&libraries=places"></script>
 
 
 
@@ -62,6 +65,21 @@
         </div>
     </nav>
 
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+          <div class="alert alert-danger">
+            {{ message }}
+          </div>
+        {% endif %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+          <div class="alert alert-success">
+            {{ message }}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
     <div class="container">
       <div class="row">
         <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
@@ -71,47 +89,104 @@
             </div>
             <div class="card-body">
               <h5 class="card-title text-center">Add Event</h5>
-              <form class="form-signin">
-
+              <form class="form-signin" method="POST">
+                {% csrf_token %}
                 <div class="form-label-group">
                   <input type="text" id="inputEventName" class="form-control" placeholder="Event Name" name="event_name" required autofocus>
                   <label for="inputEventName">Event Name</label>
                 </div>
 
                 <div class="form-label-group">
-                  <input type="text" id="inputOrganization" class="form-control" placeholder="Organization" name="organization" required autofocus>
+                  <input type="text" id="inputOrganization" class="form-control" placeholder="Organization" name="organization" required>
                   <label for="inputOrganization">Organization</label>
-                </div>
-
-                <div class="form-label-group">
-                  <input type="text" id="inputLocation" class="form-control" placeholder="Building" name="location" required>
-                  <label for="inputLocation">Building/Location</label>
                 </div>
 
                 <hr>
 
                 <div class="form-label-group">
-                  <input type="text" id="inputRoom" class="form-control" placeholder="Room" required>
+                  <input type="text" id="placesSearch" class="form-control" name="location" required>
+                  <label for="placesSearch">Building/Location</label>
+                </div>
+
+                <script>
+                  var input = document.getElementById('placesSearch');
+
+                  var defaultBounds = new google.maps.LatLngBounds(
+                    new google.maps.LatLng(40.502779, -74.525083),
+                    new google.maps.LatLng(40.525226, -74.407718));
+
+                  var options = {
+                    bounds: defaultBounds
+                  };
+
+                  var autocomplete = new google.maps.places.Autocomplete(input,options);
+
+                  autocomplete.setFields(['place_id', 'geometry']);
+
+                  autocomplete.addListener('place_changed', function() {
+
+                      var place = autocomplete.getPlace();
+                      var lat = place.geometry.location.lat();
+                      var lng = place.geometry.location.lng()
+
+                      console.log(place);
+                      console.log(lat);
+                      console.log(lng);
+
+                      document.getElementById('inputLat').value = lat;
+                      document.getElementById('inputLong').value = lng;
+
+                    });
+
+                </script>
+
+                <input type="hidden" id="inputLat" name="latitude">
+                <input type="hidden" id="inputLong" name="longitude">
+
+                <div class="form-label-group">
+                  <input type="text" id="inputRoom" class="form-control" placeholder="Room" name="room">
                   <label for="inputRoom">Room Number</label>
                 </div>
 
+                <hr>
+
                 <div class="form-group">
                     <div class="input-group date" id="datepicker" data-target-input="nearest">
-                        <input type="text" class="form-control datetimepicker-input" data-target="#datepicker"/>
+                        <input type="text" class="form-control datetimepicker-input" data-target="#datepicker" name="date" placeholder="Date" required/>
                         <div class="input-group-append" data-target="#datepicker" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                         </div>
                     </div>
                 </div>
 
-
-                <div class="form-group">
-                    <div class="input-group date" id="timepicker" data-target-input="nearest">
-                        <input type="text" class="form-control datetimepicker-input" data-target="#timepicker"/>
-                        <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
-                            <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                        <div class="input-group date" id="starttimepicker" data-target-input="nearest">
+                            <input type="text" class="form-control datetimepicker-input" data-target="#starttimepicker" name="start_time" placeholder="Start Time" required/>
+                            <div class="input-group-append" data-target="#starttimepicker" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
+                            </div>
                         </div>
                     </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-group">
+                        <div class="input-group date" id="endtimepicker" data-target-input="nearest">
+                            <input type="text" class="form-control datetimepicker-input" data-target="#endtimepicker" name="end_time" placeholder="End Time" required/>
+                            <div class="input-group-append" data-target="#endtimepicker" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                  <label for="inputDescription">Description</label>
+                  <textarea class="form-control rounded-0" id="inputDescription" rows="15" name="description"></textarea>
                 </div>
 
                 <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Create Event</button>
@@ -127,7 +202,10 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-    $('#timepicker').datetimepicker({
+    $('#starttimepicker').datetimepicker({
+        format: 'LT'
+    });
+    $('#endtimepicker').datetimepicker({
         format: 'LT'
     });
     $('#datepicker').datetimepicker({
