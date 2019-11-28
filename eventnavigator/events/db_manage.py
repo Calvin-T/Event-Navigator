@@ -8,6 +8,8 @@ from geojson import Point, Feature, FeatureCollection
 import json
 from .models import *
 
+from datetime import datetime
+
 events_table = '`rutgers-app`.events'
 
 # RETURNS: dict containing 'status' and 'default_field_values'
@@ -95,6 +97,7 @@ def get_events(request):
             'geoData': geoData
         }
 
+
 def get_orgs(request):
         organizations = Organization.objects.all()
         organizationList = []
@@ -109,3 +112,60 @@ def get_orgs(request):
         return {
             'organizationList': organizationList
         }
+
+def post_new_event(request):
+    eventName = request.POST.get("event_name")
+    organization = request.POST.get("organization")
+    location = request.POST.get("location")
+    room = request.POST.get("room")
+    date = request.POST.get("date")
+    start_time = request.POST.get("start_time")
+    end_time = request.POST.get("end_time")
+    lat = request.POST.get("latitude")
+    long = request.POST.get("longitude")
+    description = request.POST.get("description")
+
+    # Convert 12 hour time into 24 hour time then into time object
+    in_time = datetime.strptime(start_time, "%I:%M %p")
+    out_time = datetime.strftime(in_time, "%H:%M")
+    time_object = datetime.strptime(out_time, '%H:%M').time()
+
+    # Convert date string into date object
+    date_object = datetime.strptime(date, '%m/%d/%Y').date()
+
+    # Combine time and date to suitable format for database
+    dt = datetime.combine(date_object, time_object)
+
+    # Do same for end time
+    in_time = datetime.strptime(end_time, "%I:%M %p")
+    out_time = datetime.strftime(in_time, "%H:%M")
+    time_object = datetime.strptime(out_time, '%H:%M').time()
+
+    dt2 = datetime.combine(date_object, time_object)
+
+    # Throw error checking cases here
+    # start time later than end time
+    if dt > dt2:
+        print("START TIME > END TIME")
+        create_event_results = {
+            'status': "error",
+            'message': "Start time later than end time."
+        }
+        return create_event_results
+
+    if Event.objects.filter(Q(name=eventName) and Q(organization=organization) and Q(date=dt)).count() > 0:
+        print("DUPLICATE EVENT")
+        create_event_results = {
+            'status': "error",
+            'message': "Event already exists!"
+        }
+        return create_event_results
+
+    event = Event(name=eventName, date=dt, end_date=dt2, host_org=organization, description=description, longitude=long, latitude=lat, location=location, room=room)
+    event.save()
+    create_event_results = {
+        'status': "success"
+    }
+    print('[DEBUG] RETURN: 1')
+    return create_event_results
+
