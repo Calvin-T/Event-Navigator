@@ -79,50 +79,12 @@
               </tr>
           </thead>
           <tbody>
-              <tr>
-                  <td>Row 1 Data 1</td>
-                  <td>Row 1 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 2 Data 1</td>
-                  <td>Row 2 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 1 Data 1</td>
-                  <td>Row 1 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 2 Data 1</td>
-                  <td>Row 2 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 1 Data 1</td>
-                  <td>Row 1 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 2 Data 1</td>
-                  <td>Row 2 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 1 Data 1</td>
-                  <td>Row 1 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 2 Data 1</td>
-                  <td>Row 2 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 1 Data 1</td>
-                  <td>Row 1 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 2 Data 1</td>
-                  <td>Row 2 Data 2</td>
-              </tr>
-              <tr>
-                  <td>Row 2 Data 1</td>
-                  <td>Row 2 Data 2</td>
-              </tr>
+              {% for organization in organizations %}
+                 <tr>
+                    <td>{{ organization.orgName }}</td>
+                   <td>{{ organization.orgLoc }}</td>
+                  </tr>
+              {% endfor %}
           </tbody>
         </table>
       </div>
@@ -132,9 +94,7 @@
 </html>
 
 <script>
-
 $(document).ready( function () {
   $('#orgs_table').DataTable();
 });
-
 </script>
