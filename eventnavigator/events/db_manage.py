@@ -94,3 +94,18 @@ def get_events(request):
             'eventList': eventsList,
             'geoData': geoData
         }
+
+def get_orgs(request):
+        organizations = Organization.objects.all()
+        organizationList = []
+        for organization in organizations:
+            temp = {
+                'orgName': organization.name,
+                'orgLoc': organization.location
+            }
+            organizationList.append(temp)
+            
+
+        return {
+            'organizationList': organizationList
+        }

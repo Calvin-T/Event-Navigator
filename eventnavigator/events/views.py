@@ -11,7 +11,9 @@ def home(request):
     return render(request, 'home.html', {'events': events['eventList'], 'geoData': events['geoData']})
 
 def organizations(request):
-    return render(request, 'organizations.html')
+    if request.method == 'GET':
+        organizations = get_orgs(request);
+    return render(request, 'organizations.html',  {'organizations': organizations['organizationList']})
 
 def login(request):
     return render(request, 'login.html')
