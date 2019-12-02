@@ -78,14 +78,15 @@ def get_events(request):
                 'eventHostOrg': event.host_org
             }
             eventsList.append(temp)
-            tempPoint = Point((float(event.latitude),float(event.longitude)))
+            tempPoint = Point((float(event.longitude),float(event.latitude)))
             tempProperties = {
                 "marker-colorv": "#fb0246",
                 "marker-size": "medium",
-                "marker-symbol": "",
-                "EventName": event.name,
-                "Host Org": event.host_org,
-                "Time": event.date.strftime("%m%d%Y, %H:%M")
+                "location": event.location,
+                "eventName": event.name,
+                "hostOrg": event.host_org,
+                "date": event.date.strftime("%m-%d-%Y, %H:%M"),
+                "eventID": event.id
             }
             tempFeature = Feature(geometry=tempPoint, properties=tempProperties)
             featureList.append(tempFeature)

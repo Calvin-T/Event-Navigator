@@ -116,6 +116,13 @@
                 </form>
               </div>
               <div class="col-12">
+                <style>
+                    .mapboxgl-popup {
+                        max-width: 400px;
+                        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+                    }
+                </style>
+
                 <div id='map'></div>
                 <script>
                 mapboxgl.accessToken = 'pk.eyJ1IjoiY3RhbmcxOTk4IiwiYSI6ImNrMm10MXl2YjBsZmIzbXQ1NW15YW15OTIifQ.tethu75zoCk5OiHARIYZ9A';
@@ -123,8 +130,6 @@
                 container: 'map',
                 style: 'mapbox://styles/ctang1998/ck2mt2egv0pit1cmwlm1uf1ws'
                 });
-
-                console.log('{{ geoData }}');
 
                 var geoData = JSON.parse('{{ geoData }}'.replace(/&quot;/g,'"'));
                 // see https://docs.mapbox.com/playground/marker/ as reference
@@ -145,6 +150,72 @@
                       }
                     });
                   });
+
+
+                  var popup = new mapboxgl.Popup({
+                      closeButton: true,
+                      closeOnClick: true
+                  });
+
+                  map.on('click', 'events-map', function(e) {
+                      // Change the cursor style as a UI indicator.
+                      map.getCanvas().style.cursor = 'pointer';
+
+                      var coordinates = e.features[0].geometry.coordinates.slice();
+                      var eventID = e.features[0].properties.eventID;
+                      var date = e.features[0].properties.date;
+                      var location = e.features[0].properties.location;
+                      var eventName = e.features[0].properties.eventName;
+                      var hostOrg = e.features[0].properties.hostOrg;
+
+                      var html = `<p><strong>${eventName}</strong></p>
+                      <table>
+                          <tbody>
+                              <tr>
+                                  <th>Host:</th>
+                                  <td>${hostOrg}</td>
+                              </tr>
+                              <tr>
+                                  <th>Time:</th>
+                                  <td>${date}</td>
+                              </tr>
+                              <tr>
+                                  <th>Location:</th>
+                                  <td>${location}</td>
+                              </tr>
+                          </tbody>
+                      </table>
+                      <div>
+                      <form action="event-details" method="GET" id="eventsForm">
+                        <input type="hidden" id="eventID" name="eventID" value="${eventID}">
+                      </form>
+                      <button form="eventsForm" type="submit" value="Submit">See Event Details</button>
+                      <form action="org-details" method="GET" id="orgsForm">
+                        <input type="hidden" id="hostOrg" name="hostOrg" value="${hostOrg}">
+                      </form>
+                      <button form="orgsForm" type="submit" value="Submit">See Organization Details</button>
+                      </div>`;
+                      // Ensure that if the map is zoomed out such that multiple
+                      // copies of the feature are visible, the popup appears
+                      // over the copy being pointed to.
+                      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                      }
+
+                      popup.setLngLat(coordinates)
+                          .setHTML(html)
+                          .addTo(map);
+                  });
+                  map.on('mouseenter', 'events-map', function () {
+                    map.getCanvas().style.cursor = 'pointer';
+                  });
+
+                  // Change it back to a pointer when it leaves.
+                  map.on('mouseleave', 'events-map', function () {
+                    map.getCanvas().style.cursor = '';
+                  });
+
+
                 });
                 </script>
               </div>
