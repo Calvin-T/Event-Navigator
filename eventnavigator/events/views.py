@@ -40,7 +40,8 @@ def event_details(request):
     return render(request, 'event-detail.html')
 
 def org_details(request):
-    return render(request, 'org-detail.html')
+    populator = populate_org_details(request)
+    return render(request, 'org-detail.html', {'info': populator['org_info'], 'events': populator['org_events']})
 
 def add_event(request):
     if request.method == 'POST':

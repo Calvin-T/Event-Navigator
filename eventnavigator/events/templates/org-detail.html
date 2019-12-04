@@ -20,6 +20,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.16/css/mdb.min.css" rel="stylesheet">
 
   </head>
+  <style>
+    tr[data-href] {
+       cursor: pointer;
+    }
+    </style>
+
   <body>
 
     <!-- bootstrap js, jquery, popper js -->
@@ -64,65 +70,73 @@
         <!-- Portfolio Item Row -->
         <div class="row">
           <div class="col-md-4">
-            <h2 class="my-2">Organization</h2>
+            <h2 class="my-2">{{info.orgName}}</h2>
             <img class="img-fluid" src="http://placehold.it/750x500" alt="" id="event-image">
-            <h5 class="my-2">Link: </h5>
+            <h5 class="my-2">Link: {{info.orgWebsite}}</h5>
             <hr style="width: 100%; color: white; height: 1px; background-color:white;" />
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
+            <p>{{info.orgDescription}}</p>
           </div>
 
           <div class="col-md-8">
-            <table id="events_table" class="table table-hover table-sm">
+            <table id="events_table" class="table table-hover table-dark">
               <thead>
                   <tr>
+                      <th>ID</th>
                       <th>Name</th>
                       <th>Time</th>
                       <th>Location</th>
                   </tr>
               </thead>
               <tbody>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                      <td>Row 1 Data 3</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                      <td>Row 1 Data 3</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                      <td>Row 1 Data 3</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                      <td>Row 1 Data 3</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                      <td>Row 1 Data 3</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                      <td>Row 1 Data 3</td>
-                  </tr>
-                  <tr>
-                      <td>Row 1 Data 1</td>
-                      <td>Row 1 Data 2</td>
-                      <td>Row 1 Data 3</td>
-                  </tr>
+                {% for event in events %}
+                     <tr data-href="event-details">
+                       <td>{{ event.eventID}}</td>
+                       <td>{{ event.eventName}}</td>
+                       <td>{{ event.eventDate}}</td>
+                       <td>{{ event.eventLocation}}</td>
+                      </tr>
+                {% endfor %}
               </tbody>
             </table>
+            <script>
+
+              document.addEventListener("DOMContentLoaded", (event) => {
+                 const rows = document.querySelectorAll("tr[data-href]");
+                 rows.forEach(row => {
+                   row.addEventListener("click", (event) => {
+                     //index is index based 1. The zero'th index is the table column headers.
+                    var index = event.target.parentElement.rowIndex;
+                    var myTable = document.getElementById("events_table");
+                    var rows = myTable.getElementsByTagName("tr");
+                    var col = rows[index].getElementsByTagName("td");
+                    sendGetRequest("event-details", {eventID: col[0].innerHTML});
+                   });
+                 });
+              });
+
+              function sendGetRequest(path, params, method='GET') {
+                const form = document.createElement('form');
+                form.method = method;
+                form.action = path;
+
+                for (const key in params) {
+                  if (params.hasOwnProperty(key)) {
+                    const hiddenField = document.createElement('input');
+                    hiddenField.type = 'hidden';
+                    hiddenField.name = key;
+                    hiddenField.value = params[key];
+
+                    form.appendChild(hiddenField);
+                  }
+              }
+
+              document.body.appendChild(form);
+              form.submit();
+            }
+
+            </script>
 
           </div>
-
-
-
         </div>
         <!-- /.row -->
 

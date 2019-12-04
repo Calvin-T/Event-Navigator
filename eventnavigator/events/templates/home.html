@@ -73,7 +73,6 @@
             <h1 id="title">Events</h1>
             <table id="events_table" class="table table-hover table-sm">
               <thead>
-
                 <tr>
                      <th>Name</th>
                      <th>Organization</th>
@@ -151,14 +150,12 @@
                     });
                   });
 
-
                   var popup = new mapboxgl.Popup({
                       closeButton: true,
                       closeOnClick: true
                   });
 
                   map.on('click', 'events-map', function(e) {
-                      // Change the cursor style as a UI indicator.
                       map.getCanvas().style.cursor = 'pointer';
 
                       var coordinates = e.features[0].geometry.coordinates.slice();
@@ -209,13 +206,9 @@
                   map.on('mouseenter', 'events-map', function () {
                     map.getCanvas().style.cursor = 'pointer';
                   });
-
-                  // Change it back to a pointer when it leaves.
                   map.on('mouseleave', 'events-map', function () {
                     map.getCanvas().style.cursor = '';
                   });
-
-
                 });
                 </script>
               </div>
@@ -225,14 +218,10 @@
       </div>
     </div>
 
-
-
-
   </body>
 </html>
 
 <script>
-
 
 $(document).ready( function () {
   $('#events_table').DataTable( {
@@ -243,8 +232,6 @@ $(document).ready( function () {
             "infoFiltered": "(filtered from _MAX_ total records)"
         }
     } );
-
-
 });
 
 </script>

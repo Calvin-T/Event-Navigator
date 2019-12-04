@@ -91,8 +91,7 @@ def get_events(request):
             tempFeature = Feature(geometry=tempPoint, properties=tempProperties)
             featureList.append(tempFeature)
         geoData = FeatureCollection(featureList)
-        print(geoData)
-
+        
         return {
             'eventList': eventsList,
             'geoData': geoData
@@ -107,8 +106,6 @@ def get_orgs(request):
                 'orgLoc': organization.location
             }
             organizationList.append(temp)
-
-
         return {
             'organizationList': organizationList
         }
@@ -168,3 +165,32 @@ def post_new_event(request):
     }
     print('[DEBUG] RETURN: 1')
     return create_event_results
+
+# Used when user enters the org_detais page.
+# RETURNS: a dict containing 'org_info' and 'org_events'
+#       'org_info' = dict of the organization's information
+#       'org_events' = list of dics of the org's events
+def populate_org_details(request):
+    org_name = request.GET.get("hostOrg")
+    org = Organization.objects.filter(name=org_name).first()
+    org_info_dict = {
+            'orgName': org_name,
+            'orgLocation': org.location,
+            'orgDescription': org.description,
+            'orgWebsite': org.website
+    }
+    events = Event.objects.filter(host_org=org_name)
+    eventsList = []
+    for event in events:
+        temp = {
+            'eventID': event.id,
+            'eventName': event.name,
+            'eventDescription': event.description,
+            'eventLocation': event.location,
+            'eventDate': event.date
+        }
+        eventsList.append(temp)
+    return{
+        'org_info': org_info_dict,
+        'org_events': eventsList
+    }
