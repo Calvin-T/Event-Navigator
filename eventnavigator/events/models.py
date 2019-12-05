@@ -10,6 +10,7 @@ class Event(models.Model):
      latitude = models.DecimalField(max_digits=10, decimal_places = 8)
      location = models.CharField(max_length=120)
      room = models.CharField(max_length=20)
+     image = models.ImageField(upload_to='event_images',blank=True)
 
 class Account(models.Model):
     username = models.CharField(max_length=10)

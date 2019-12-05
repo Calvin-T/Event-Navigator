@@ -51,8 +51,8 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-login' %}">Login</a>
                 </li>
-                <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'events-register' %}">Register<span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'events-register' %}">Register</a>
                 </li>
             </ul>
             <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
@@ -89,23 +89,20 @@
             </div>
             <div class="card-body">
               <h5 class="card-title text-center">Add Event</h5>
-              <form class="form-signin" method="POST">
+              <form class="form-signin" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="form-label-group">
+                <div class="form-group">
                   <input type="text" id="inputEventName" class="form-control" placeholder="Event Name" name="event_name" required autofocus>
-                  <label for="inputEventName">Event Name</label>
                 </div>
 
-                <div class="form-label-group">
+                <div class="form-group">
                   <input type="text" id="inputOrganization" class="form-control" placeholder="Organization" name="organization" required>
-                  <label for="inputOrganization">Organization</label>
                 </div>
 
                 <hr>
 
-                <div class="form-label-group">
-                  <input type="text" id="placesSearch" class="form-control" name="location" required>
-                  <label for="placesSearch">Building/Location</label>
+                <div class="form-group">
+                  <input type="text" id="placesSearch" class="form-control" name="location" placeholder="Building/Location" required>
                 </div>
 
                 <script>
@@ -143,9 +140,8 @@
                 <input type="hidden" id="inputLat" name="latitude">
                 <input type="hidden" id="inputLong" name="longitude">
 
-                <div class="form-label-group">
+                <div class="form-group">
                   <input type="text" id="inputRoom" class="form-control" placeholder="Room" name="room">
-                  <label for="inputRoom">Room Number</label>
                 </div>
 
                 <hr>
@@ -187,6 +183,13 @@
                 <div class="form-group">
                   <label for="inputDescription">Description</label>
                   <textarea class="form-control rounded-0" id="inputDescription" rows="15" name="description"></textarea>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                  <label for="eventImage">Image</label><br>
+                  <input type="file" id="eventImage" name="image" accept="image/*">
                 </div>
 
                 <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Create Event</button>
