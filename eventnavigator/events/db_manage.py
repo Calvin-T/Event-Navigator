@@ -91,7 +91,7 @@ def get_events(request):
             tempFeature = Feature(geometry=tempPoint, properties=tempProperties)
             featureList.append(tempFeature)
         geoData = FeatureCollection(featureList)
-        
+
         return {
             'eventList': eventsList,
             'geoData': geoData
@@ -121,6 +121,8 @@ def post_new_event(request):
     lat = request.POST.get("latitude")
     long = request.POST.get("longitude")
     description = request.POST.get("description")
+    image = request.FILES["image"]
+    print(image)
 
     # Convert 12 hour time into 24 hour time then into time object
     in_time = datetime.strptime(start_time, "%I:%M %p")
@@ -158,7 +160,7 @@ def post_new_event(request):
         }
         return create_event_results
 
-    event = Event(name=eventName, date=dt, end_date=dt2, host_org=organization, description=description, longitude=long, latitude=lat, location=location, room=room)
+    event = Event(name=eventName, date=dt, end_date=dt2, host_org=organization, description=description, longitude=long, latitude=lat, location=location, room=room, image=image)
     event.save()
     create_event_results = {
         'status': "success"
@@ -194,3 +196,22 @@ def populate_org_details(request):
         'org_info': org_info_dict,
         'org_events': eventsList
     }
+
+def get_event_details(request):
+        event_ID = request.GET.get("eventID")
+
+        event = Event.objects.filter(id=event_ID).first()
+        event_info_dict = {
+            'name': event.name,
+            'org' : event.host_org,
+            'description': event.description,
+            'location': event.location,
+            'room': event.room,
+            'start_date': event.date,
+            'end_date': event.end_date,
+            'long': event.longitude,
+            'lat': event.latitude,
+            'image': event.image
+        }
+
+        return event_info_dict

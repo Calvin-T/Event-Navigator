@@ -10,7 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/main.css' %}" />
-    
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/event-detail.css' %}" />
+
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -68,30 +69,33 @@
         <!-- Portfolio Item Row -->
         <div class="row">
           <div class="col-md-4">
-            <h2 class="my-2">Event Name</h2>
-            <h4>Organization</h4>
-            <h5 class="my-2">Location: </h5>
-            <h5 class="my-2">Time: </h5>
-            <h5 class="my-2">Link: </h5>
-            <hr style="width: 100%; color: white; height: 1px; background-color:white;" />
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
+            <div class="card">
+              <h2 class="my-2">{{ event.name }}</h2>
+              <h4>{{ event.org }}</h4>
+              <h5 class="my-2">Location: {{ event.location }} </h5>
+              <h5 class="my-2">Time: {{ event.start_date }} - {{ event.end_date }} </h5>
+              <h5 class="my-2">Link: </h5>
+              <hr style="width: 100%; color: white; height: 1px; background-color:white;" />
+              <p>{{ event.description }}</p>
+            </div>
           </div>
 
           <div class="col-md-5">
-            <img class="img-fluid" src="http://placehold.it/750x500" alt="" id="event-image">
-            <div id='map'></div>
-            <script>
-              mapboxgl.accessToken = 'pk.eyJ1IjoiY3RhbmcxOTk4IiwiYSI6ImNrMm10MXl2YjBsZmIzbXQ1NW15YW15OTIifQ.tethu75zoCk5OiHARIYZ9A';
-              var map = new mapboxgl.Map({
-                container: 'map',
-                style: 'mapbox://styles/ctang1998/ck2mt2egv0pit1cmwlm1uf1ws'
-              });
-            </script>
+            <div class="card">
+              {% if hasImage %}
+              <img class="img-fluid" src="media/{{ event.image }}" alt="" id="event-image">
+              {% endif %}
+              <div id='map'>
+                <img src={{map_link}} style="background-image: url({{map_link}});">
+                <p>© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a></p>
+              </div>
+            </div>
           </div>
 
           <div class="col-md-3">
-            Comments
-
+            <div class="card">
+              Comments
+            </div>
           </div>
 
 

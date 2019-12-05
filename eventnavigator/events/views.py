@@ -37,7 +37,17 @@ def account_details(request):
     return render(request, 'account-detail.html')
 
 def event_details(request):
-    return render(request, 'event-detail.html')
+    event = get_event_details(request)
+    long = event['long']
+    lat = event['lat']
+    link = "https://api.mapbox.com/v4/mapbox.streets/pin-m-marker+285A98({},{})/{},{},15/600x300@2x.png?access_token=pk.eyJ1IjoiY3RhbmcxOTk4IiwiYSI6ImNrMm10MXl2YjBsZmIzbXQ1NW15YW15OTIifQ.tethu75zoCk5OiHARIYZ9A".format(long, lat, long, lat)
+    print(link)
+    image = event['image']
+    print(image)
+    hasImage = True
+    if image == '':
+        hasImage = False
+    return render(request, 'event-detail.html', {'event': event , 'map_link': link, 'hasImage': hasImage})
 
 def org_details(request):
     populator = populate_org_details(request)
