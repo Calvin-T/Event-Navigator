@@ -63,14 +63,17 @@ def get_events(request):
         filter_end_date = request.POST.get("filter_end_date")
         filter_org = request.POST.get("filter_org")
 
-        if filter_start_date == None:
+        if filter_start_date == None or filter_start_date == '':
             filter_start_date = datetime.today().strftime('%Y-%m-%d')
             filter_end_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+        if filter_start_date == None or filter_start_date == '':
+            temp_sd = datetime.strptime(filter_start_date, '%Y-%m-%d')
+            filter_end_date = (temp_sd + timedelta(days=7)).strftime('%Y-%m-%d')
         sd = datetime.strptime(filter_start_date, '%Y-%m-%d')
         ed = datetime.strptime(filter_end_date, '%Y-%m-%d')
         events = ""
 
-        if filter_org == None:
+        if filter_org == None or filter_org == "":
             events = Event.objects.filter(date__range=[sd,ed]);
             filter_org = ""
         else:
@@ -81,7 +84,8 @@ def get_events(request):
             temp = {
                 'eventID': event.id,
                 'eventName': event.name,
-                'eventHostOrg': event.host_org
+                'eventHostOrg': event.host_org,
+                'eventDate': event.date.strftime("%m-%d-%Y, %H:%M")
             }
             eventsList.append(temp)
             tempPoint = Point((float(event.longitude),float(event.latitude)))
