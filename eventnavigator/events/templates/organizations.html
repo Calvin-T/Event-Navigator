@@ -23,6 +23,11 @@
 
 
   </head>
+  <style>
+    tr[data-href] {
+       cursor: pointer;
+    }
+  </style>
   <body>
 
     <!-- bootstrap js, jquery, popper js, datatables -->
@@ -65,7 +70,6 @@
         </div>
     </nav>
 
-
     <div class="container">
       <div class="card">
 
@@ -80,15 +84,55 @@
           </thead>
           <tbody>
               {% for organization in organizations %}
-                 <tr>
+                 <tr data-href="org-details">
                     <td>{{ organization.orgName }}</td>
                    <td>{{ organization.orgLoc }}</td>
                   </tr>
               {% endfor %}
           </tbody>
         </table>
+        <script>
+          document.addEventListener("DOMContentLoaded", (event) => {
+             const rows = document.querySelectorAll("tr[data-href]");
+             rows.forEach(row => {
+               row.addEventListener("click", (event) => {
+                  var index = event.target.parentElement.rowIndex;
+                  var myTable = document.getElementById("orgs_table");
+                  var rows = myTable.getElementsByTagName("tr");
+                  var col = rows[index].getElementsByTagName("td");
+                  sendGetRequest("org-details", { hostOrg: col[0].innerHTML});
+               });
+             });
+          });
+
+          function sendGetRequest(path, params, method='GET') {
+            const form = document.createElement('form');
+            form.method = method;
+            form.action = path;
+
+            for (const key in params) {
+              if (params.hasOwnProperty(key)) {
+                const hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.name = key;
+                hiddenField.value = params[key];
+
+                form.appendChild(hiddenField);
+              }
+          }
+          document.body.appendChild(form);
+          form.submit();
+        }
+        </script>
+
       </div>
     </div>
+    <script>
+    document.addEventListener("DOMContentLoaded". () => {
+       const rows = document.querySelectorAll("tr[data-href]");
+       console.log(rows);
+    });
+    </script>
 
   </body>
 </html>
@@ -97,4 +141,5 @@
 $(document).ready( function () {
   $('#orgs_table').DataTable();
 });
+
 </script>

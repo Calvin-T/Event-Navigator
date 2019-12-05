@@ -8,9 +8,8 @@ from geojson import Point, Feature, FeatureCollection
 import json
 from .models import *
 
-from datetime import datetime
-
-events_table = '`rutgers-app`.events'
+from datetime import datetime , timedelta
+from email.utils import parsedate_tz, mktime_tz
 
 # RETURNS: dict containing 'status' and 'default_field_values'
     # status: results after user attempt to register (succss/fail)
@@ -23,13 +22,6 @@ def register_account(request):
         inputConfirmPassword = request.POST.get("inputConfirmPassword")
         isOrg = True if request.POST.get("isOrg") == "on" else False
 
-        print('[DEBUG] db_manage.register_account()')
-        print('[DEBUG] inputUsername: {}'.format(inputUsername))
-        print('[DEBUG] inputEmail: {}'.format(inputEmail))
-        print('[DEBUG] inputPassword: {}'.format(inputPassword))
-        print('[DEBUG] inputConfirmPassword: {}'.format(inputConfirmPassword))
-        print('[DEBUG] isOrg {}'.format(isOrg))
-
         if inputPassword != inputConfirmPassword:
             messages.error(request,'Error: Passwords do not match! Please try again')
             register_results = {
@@ -40,7 +32,6 @@ def register_account(request):
                         'defaultIsOrg': isOrg
                     }
             }
-            print('[DEBUG] RETURN: -1 (Password != confirmPassword)')
             return register_results
 
         if Account.objects.filter(Q(username=inputUsername) | Q(email=inputEmail)).count() > 0:
@@ -61,27 +52,40 @@ def register_account(request):
         register_results = {
             'status': "success"
         }
-        print('[DEBUG] RETURN: 1')
         return register_results
 
-#RETURNS: dic with 'eventList' and 'featureList'
+#RETURNS: dic with 'eventList' and 'featureList', supports filtering by dates and org
     # eventList: list of just each events name and host_org
     # geoData: list of the event's geojson for mapbox
-#TODO: filtering by orgs, removing events from the past
+#TODO: removing events from the past
 def get_events(request):
-        events = Event.objects.all()
+        filter_start_date = request.POST.get("filter_start_date")
+        filter_end_date = request.POST.get("filter_end_date")
+        filter_org = request.POST.get("filter_org")
+
+        if filter_start_date == None:
+            filter_start_date = datetime.today().strftime('%Y-%m-%d')
+            filter_end_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+        sd = datetime.strptime(filter_start_date, '%Y-%m-%d')
+        ed = datetime.strptime(filter_end_date, '%Y-%m-%d')
+        events = ""
+
+        if filter_org == None:
+            events = Event.objects.filter(date__range=[sd,ed]);
+            filter_org = ""
+        else:
+            events =  Event.objects.filter(Q(date__range=[sd,ed]) & Q(host_org = filter_org));
         eventsList = []
         featureList = []
         for event in events:
             temp = {
+                'eventID': event.id,
                 'eventName': event.name,
                 'eventHostOrg': event.host_org
             }
             eventsList.append(temp)
             tempPoint = Point((float(event.longitude),float(event.latitude)))
             tempProperties = {
-                "marker-colorv": "#fb0246",
-                "marker-size": "medium",
                 "location": event.location,
                 "eventName": event.name,
                 "hostOrg": event.host_org,
@@ -94,7 +98,12 @@ def get_events(request):
 
         return {
             'eventList': eventsList,
-            'geoData': geoData
+            'geoData': geoData,
+            'filterDefaults': {
+                        'start': filter_start_date,
+                        'end': filter_end_date,
+                        'org': filter_org
+            }
         }
 
 def get_orgs(request):
