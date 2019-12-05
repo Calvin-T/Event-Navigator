@@ -6,10 +6,10 @@ from django.utils.safestring import mark_safe
 from django.contrib import messages
 from .db_manage import *
 
+@csrf_exempt
 def home(request):
-    if request.method == 'GET':
-        events = get_events(request);
-    return render(request, 'home.html', {'events': events['eventList'], 'geoData': events['geoData']})
+    events = get_events(request);
+    return render(request, 'home.html', {'events': events['eventList'], 'geoData': events['geoData'], 'filterDefaults': events['filterDefaults']})
 
 def organizations(request):
     if request.method == 'GET':

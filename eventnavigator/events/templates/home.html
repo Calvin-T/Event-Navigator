@@ -65,6 +65,11 @@
             </ul>
         </div>
     </nav>
+    <style>
+      tr[data-href] {
+         cursor: pointer;
+      }
+    </style>
 
     <div class="container-full">
       <div class="row">
@@ -74,44 +79,47 @@
             <table id="events_table" class="table table-hover table-sm">
               <thead>
                 <tr>
+                     <th>ID</th>
                      <th>Name</th>
                      <th>Organization</th>
                  </tr>
               </thead>
               <tbody>
               {% for event in events %}
-                 <tr>
-                    <td>{{ event.eventName }}</td>
+                 <tr data-href="event-details">
+                   <td>{{ event.eventID }}</td>
+                   <td>{{ event.eventName }}</td>
                    <td>{{ event.eventHostOrg }}</td>
                   </tr>
               {% endfor %}
             </tbody>
             </table>
+
           </div>
         </div>
         <div class="col-7" id="map_and_filter_col">
           <div class="card">
             <div class="row">
               <div class="col-12" id="filter-form">
-                <form class="form-inline">
+                <form class="form-inline" method="POST" action="" id="filter-form">
                   <div class="form-group row">
                     <div class="col-10">
-                      <input class="form-control form-control-sm" type="date" id="filter_start_date">
+                      <input class="form-control form-control-sm" type="date" id="filter_start_date" name="filter_start_date">
                     </div>
                   </div>
                   <label>&nbsp;to&nbsp;</label>
                   <div class="form-group row">
                     <div class="col-10">
-                      <input class="form-control form-control-sm" type="date" id="filter_end_date">
+                      <input class="form-control form-control-sm" type="date" id="filter_end_date" name="filter_end_date" >
                     </div>
                   </div>
                   <label>&nbsp;&nbsp;</label>
                   <div class="form-group row">
                     <div class="col-10">
-                      <input class="form-control form-control-sm" type="text" id="filter_org_name" placeholder="Organization">
+                      <input class="form-control form-control-sm" type="text" id="filter_org_name" name="filter_org" placeholder="Organization">
                     </div>
                   </div>
-                  <button class="btn waves-effect btn-mdb-color btn-sm" type="submit">Filter</button>
+                  <button class="btn waves-effect btn-mdb-color btn-sm" type="submit" id="filter-button" >Filter</button>
                 </form>
               </div>
               <div class="col-12">
@@ -124,10 +132,43 @@
 
                 <div id='map'></div>
                 <script>
+                  // Setting onClick() to each row in events table
+                  document.addEventListener("DOMContentLoaded", (event) => {
+                     const rows = document.querySelectorAll("tr[data-href]");
+                     rows.forEach(row => {
+                       row.addEventListener("click", (event) => {
+                          var index = event.target.parentElement.rowIndex;
+                          var myTable = document.getElementById("events_table");
+                          var rows = myTable.getElementsByTagName("tr");
+                          var col = rows[index].getElementsByTagName("td");
+                          sendGetRequest("event-details", { hostOrg: col[0].innerHTML});
+                       });
+                     });
+                  });
+
+                  function sendGetRequest(path, params, method='GET') {
+                    const form = document.createElement('form');
+                    form.method = method;
+                    form.action = path;
+
+                    for (const key in params) {
+                      if (params.hasOwnProperty(key)) {
+                        const hiddenField = document.createElement('input');
+                        hiddenField.type = 'hidden';
+                        hiddenField.name = key;
+                        hiddenField.value = params[key];
+                        form.appendChild(hiddenField);
+                      }
+                  }
+                  document.body.appendChild(form);
+                  form.submit();
+                }
+
+                //Setting up and populating the map with event coordinates.
                 mapboxgl.accessToken = 'pk.eyJ1IjoiY3RhbmcxOTk4IiwiYSI6ImNrMm10MXl2YjBsZmIzbXQ1NW15YW15OTIifQ.tethu75zoCk5OiHARIYZ9A';
                 var map = new mapboxgl.Map({
-                container: 'map',
-                style: 'mapbox://styles/ctang1998/ck2mt2egv0pit1cmwlm1uf1ws'
+                  container: 'map',
+                  style: 'mapbox://styles/ctang1998/ck2mt2egv0pit1cmwlm1uf1ws'
                 });
 
                 var geoData = JSON.parse('{{ geoData }}'.replace(/&quot;/g,'"'));
@@ -210,6 +251,34 @@
                     map.getCanvas().style.cursor = '';
                   });
                 });
+                const today = '{{filterDefaults.start}}'
+                const nextWeek = '{{filterDefaults.end}}'
+                const filter_org = '{{filterDefaults.org}}'
+
+                //Setting the filter start date option in the mapbox to today
+                document.getElementById("filter_start_date").value = today;
+                document.getElementById("filter_end_date").value = nextWeek;
+                document.getElementById("filter_org_name").value = filter_org;
+
+                //setting min date of filter_start_date to today's date (do this later -bandy)
+              /*  document.getElementById('filter_start_date').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+                  $(function(){
+                    var dtToday = new Date();
+
+                    var month = dtToday.getMonth();
+                    alert(dtToday);
+                    var day = dtToday.getDate();
+                    var year = dtToday.getFullYear();
+                    if(month < 10)
+                        month = '0' + month.toString();
+                    if(day < 10)
+                        day = '0' + day.toString();
+
+                    var maxDate = year + '-' + month + '-' + day;
+                    alert(maxDate);
+                    $('#filter_start_date').attr('min', maxDate);
+                }); */
+
                 </script>
               </div>
             </div>
@@ -232,6 +301,16 @@ $(document).ready( function () {
             "infoFiltered": "(filtered from _MAX_ total records)"
         }
     } );
+});
+
+$(document).ready(function () {
+    $("#dt").click(function () {
+        var userDate = new Date(document.getElementById("mydate").value);
+        var today = new Date();
+        if (today.getTime()>userDate.getTime()) {
+            alert("invalid date");
+        }
+    });
 });
 
 </script>
