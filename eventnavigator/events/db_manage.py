@@ -130,7 +130,11 @@ def post_new_event(request):
     lat = request.POST.get("latitude")
     long = request.POST.get("longitude")
     description = request.POST.get("description")
-    image = request.FILES["image"]
+    link = request.POST.get("link")
+    try:
+        image = request.FILES["image"]
+    except:
+        image = None
     print(image)
 
     # Convert 12 hour time into 24 hour time then into time object
@@ -169,7 +173,7 @@ def post_new_event(request):
         }
         return create_event_results
 
-    event = Event(name=eventName, date=dt, end_date=dt2, host_org=organization, description=description, longitude=long, latitude=lat, location=location, room=room, image=image)
+    event = Event(name=eventName, date=dt, end_date=dt2, host_org=organization, description=description, longitude=long, latitude=lat, location=location, room=room, image=image, link=link)
     event.save()
     create_event_results = {
         'status': "success"
@@ -220,7 +224,8 @@ def get_event_details(request):
             'end_date': event.end_date,
             'long': event.longitude,
             'lat': event.latitude,
-            'image': event.image
+            'image': event.image,
+            'link': event.link
         }
 
         return event_info_dict

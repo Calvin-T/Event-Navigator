@@ -2,6 +2,7 @@ from django.db import models
 
 class Event(models.Model):
      name = models.CharField( max_length=60)
+     link = models.CharField( max_length=200, blank=True)
      date = models.DateTimeField()
      end_date = models.DateTimeField()
      host_org = models.CharField(max_length=120)
