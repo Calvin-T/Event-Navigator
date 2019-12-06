@@ -210,10 +210,8 @@ def populate_org_details(request):
         'org_events': eventsList
     }
 
-def get_event_details(request):
-        event_ID = request.GET.get("eventID")
-
-        event = Event.objects.filter(id=event_ID).first()
+def get_event_details(id):
+        event = Event.objects.filter(id=id).first()
         event_info_dict = {
             'name': event.name,
             'org' : event.host_org,
@@ -229,3 +227,50 @@ def get_event_details(request):
         }
 
         return event_info_dict
+
+def update_event_details(request, id):
+    event = Event.objects.filter(id=id).first()
+
+    event.name = request.POST.get("event_name")
+    event.host_org = request.POST.get("organization")
+    event.location = request.POST.get("location")
+    event.room = request.POST.get("room")
+    event.latitude = request.POST.get("latitude")
+    event.longitude = request.POST.get("longitude")
+    event.description = request.POST.get("description")
+    event.link = request.POST.get("link")
+    try:
+        image = request.FILES["image"]
+        event.image = image
+    except:
+        image = None
+
+    date = request.POST.get("date")
+    start_time = request.POST.get("start_time")
+    end_time = request.POST.get("end_time")
+    # Convert 12 hour time into 24 hour time then into time object
+    in_time = datetime.strptime(start_time, "%I:%M %p")
+    out_time = datetime.strftime(in_time, "%H:%M")
+    time_object = datetime.strptime(out_time, '%H:%M').time()
+
+    # Convert date string into date object
+    date_object = datetime.strptime(date, '%m/%d/%Y').date()
+
+    # Combine time and date to suitable format for database
+    dt = datetime.combine(date_object, time_object)
+
+    # Do same for end time
+    in_time = datetime.strptime(end_time, "%I:%M %p")
+    out_time = datetime.strftime(in_time, "%H:%M")
+    time_object = datetime.strptime(out_time, '%H:%M').time()
+
+    dt2 = datetime.combine(date_object, time_object)
+
+    event.date = dt
+    event.end_date = dt2
+
+    event.save()
+    create_event_results = {
+        'status': "success"
+    }
+    return create_event_results

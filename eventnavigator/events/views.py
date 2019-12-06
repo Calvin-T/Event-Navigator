@@ -5,6 +5,7 @@ from django.db import connection
 from django.utils.safestring import mark_safe
 from django.contrib import messages
 from .db_manage import *
+import datetime
 
 @csrf_exempt
 def home(request):
@@ -37,7 +38,9 @@ def account_details(request):
     return render(request, 'account-detail.html')
 
 def event_details(request):
-    event = get_event_details(request)
+    id = request.GET.get("eventID")
+    print(id)
+    event = get_event_details(id)
     long = event['long']
     lat = event['lat']
     link = "https://api.mapbox.com/v4/mapbox.streets/pin-m-marker+285A98({},{})/{},{},15/600x300@2x.png?access_token=pk.eyJ1IjoiY3RhbmcxOTk4IiwiYSI6ImNrMm10MXl2YjBsZmIzbXQ1NW15YW15OTIifQ.tethu75zoCk5OiHARIYZ9A".format(long, lat, long, lat)
@@ -64,3 +67,30 @@ def add_event(request):
             messages.success(request, 'Successfully created new event!')
             return render(request, 'add-event.html')
     return render(request, 'add-event.html')
+
+def edit_account(request):
+    return render(request, 'edit-account.html')
+
+def edit_event(request):
+    if request.method == 'POST':
+        id = request.POST.get('eventID')
+        print(id)
+        result = update_event_details(request, id)
+        if result['status'] == "success":
+            messages.success(request, 'Successfully updated event!')
+            return render(request, 'event-detail.html')
+        return render(request, 'home.html')
+    else:
+        id = request.GET.get('eventID')
+        print("ID: " + id)
+        event = get_event_details(id)
+        image = event['image']
+        #start_date = event['start_date'].date()
+        start_time = event['start_date'].time()
+        end_time = event['end_date'].time()
+        start_date = datetime.date.strftime(event['start_date'].date(), "%m/%d/%y")
+
+        hasImage = True
+        if image == '':
+            hasImage = False
+        return render(request, 'edit-event.html', {'event': event, 'id': id,'hasImage': hasImage, 'date': start_date, 'start_time':start_time, 'end_time': end_time})
