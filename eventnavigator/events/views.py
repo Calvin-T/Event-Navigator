@@ -53,8 +53,17 @@ def event_details(request):
     return render(request, 'event-detail.html', {'event': event , 'map_link': link, 'hasImage': hasImage})
 
 def org_details(request):
-    populator = populate_org_details(request)
-    return render(request, 'org-detail.html', {'info': populator['org_info'], 'events': populator['org_events']})
+    if request.method == 'GET':
+        print('GET')
+        populator = populate_org_details(request)
+        return render(request, 'org-detail.html', {'info': populator['org_info'], 'events': populator['org_events']})
+    else:
+        id = request.POST.get('eventID')
+        Event.objects.filter(id=id).delete()
+        print("DELETED EVENT")
+        populator = populate_org_details(request)
+        return render(request, 'org-detail.html', {'info': populator['org_info'], 'events': populator['org_events']})
+
 
 def add_event(request):
     if request.method == 'POST':
