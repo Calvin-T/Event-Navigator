@@ -86,9 +86,20 @@ def edit_event(request):
         print(id)
         result = update_event_details(request, id)
         if result['status'] == "success":
-            messages.success(request, 'Successfully updated event!')
-            return render(request, 'event-detail.html')
-        return render(request, 'home.html')
+            storage = messages.get_messages(request)
+            storage.used = True
+            messages.success(request, 'Changes saved')
+        event = get_event_details(id)
+        image = event['image']
+        #start_date = event['start_date'].date()
+        start_time = event['start_date'].time()
+        end_time = event['end_date'].time()
+        start_date = datetime.date.strftime(event['start_date'].date(), "%m/%d/%y")
+
+        hasImage = True
+        if image == '':
+            hasImage = False
+        return render(request, 'edit-event.html', {'event': event, 'id': id,'hasImage': hasImage, 'date': start_date, 'start_time':start_time, 'end_time': end_time})
     else:
         id = request.GET.get('eventID')
         print("ID: " + id)
