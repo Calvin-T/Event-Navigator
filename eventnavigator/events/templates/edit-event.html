@@ -102,21 +102,23 @@
                <!-- Background image for card set in CSS! -->
             </div>
             <div class="card-body">
-              <h5 class="card-title text-center">Add Event</h5>
+
+              <!-- EDIT STUFF -->
+              <h5 class="card-title text-center">Edit Event</h5>
               <form class="form-signin" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-group">
-                  <input type="text" id="inputEventName" class="form-control" placeholder="Event Name" name="event_name" required autofocus>
+                  <input type="text" id="inputEventName" class="form-control" placeholder="Event Name" name="event_name" value="{{event.name}}" required autofocus>
                 </div>
 
                 <div class="form-group">
-                  <input type="text" id="inputLink" class="form-control" placeholder="External Link" name="link">
+                  <input type="text" id="inputLink" class="form-control" placeholder="External Link" value="{{event.link}}" name="link">
                 </div>
 
                 <hr>
 
                 <div class="form-group">
-                  <input type="text" id="placesSearch" class="form-control" name="location" placeholder="Building/Location" required>
+                  <input type="text" id="placesSearch" class="form-control" name="location" placeholder="Building/Location" value="{{event.location}}" required>
                 </div>
 
                 <script>
@@ -152,18 +154,18 @@
 
                 </script>
 
-                <input type="hidden" id="inputLat" name="latitude">
-                <input type="hidden" id="inputLong" name="longitude">
+                <input type="hidden" id="inputLat" name="latitude" value={{event.lat}}>
+                <input type="hidden" id="inputLong" name="longitude" value={{event.long}}>
 
                 <div class="form-group">
-                  <input type="text" id="inputRoom" class="form-control" placeholder="Room" name="room">
+                  <input type="text" id="inputRoom" class="form-control" placeholder="Room" name="room" value="{{event.room}}">
                 </div>
 
                 <hr>
 
                 <div class="form-group">
                     <div class="input-group date" id="datepicker" data-target-input="nearest">
-                        <input type="text" class="form-control datetimepicker-input" data-target="#datepicker" name="date" placeholder="Date" required/>
+                        <input type="text" class="form-control datetimepicker-input" data-target="#datepicker" name="date" placeholder="Date" value="{{date}}" required/>
                         <div class="input-group-append" data-target="#datepicker" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                         </div>
@@ -174,7 +176,7 @@
                   <div class="col">
                     <div class="form-group">
                         <div class="input-group date" id="starttimepicker" data-target-input="nearest">
-                            <input type="text" class="form-control datetimepicker-input" data-target="#starttimepicker" name="start_time" placeholder="Start Time" required/>
+                            <input type="text" class="form-control datetimepicker-input" data-target="#starttimepicker" name="start_time" placeholder="Start Time" value="{{start_time}}" required/>
                             <div class="input-group-append" data-target="#starttimepicker" data-toggle="datetimepicker">
                                 <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
                             </div>
@@ -184,7 +186,7 @@
                   <div class="col">
                     <div class="form-group">
                         <div class="input-group date" id="endtimepicker" data-target-input="nearest">
-                            <input type="text" class="form-control datetimepicker-input" data-target="#endtimepicker" name="end_time" placeholder="End Time" required/>
+                            <input type="text" class="form-control datetimepicker-input" data-target="#endtimepicker" name="end_time" placeholder="End Time" value="{{end_time}}" required/>
                             <div class="input-group-append" data-target="#endtimepicker" data-toggle="datetimepicker">
                                 <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
                             </div>
@@ -197,17 +199,22 @@
 
                 <div class="form-group">
                   <label for="inputDescription">Description</label>
-                  <textarea class="form-control rounded-0" id="inputDescription" rows="15" name="description"></textarea>
+                  <textarea class="form-control rounded-0" id="inputDescription" rows="15" name="description">{{event.description}}</textarea>
                 </div>
 
                 <hr>
 
                 <div class="form-group">
-                  <label for="eventImage">Image</label><br>
+                  <label for="eventImage">Update Image</label><br>
+                  {% if hasImage %}
+                  <label>Current:</label>
+                  <img class="img-fluid" src="media/{{ event.image }}" alt="" id="event-image">
+                  {% endif %}
                   <input type="file" id="eventImage" name="image" accept="image/*">
                 </div>
 
-                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Create Event</button>
+                <input type="hidden" id="id" name="eventID" value={{id}}>
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Update</button>
               </form>
             </div>
           </div>

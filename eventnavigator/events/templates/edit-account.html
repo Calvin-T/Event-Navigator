@@ -11,7 +11,7 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
 
     <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/main.css' %}" />
-    <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/add-event.css' %}" />
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/register.css' %}" />
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -49,7 +49,7 @@
                   <a class="nav-link" href="{% url 'events-organizations' %}">Organizations</a>
                 </li>
                 {% if user.is_authenticated %}
-                {% if hasOrg %}
+                {% if isOrg %}
                 <li class="nav-item">
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'events-add-event' %}">Add Event</a>
@@ -102,114 +102,43 @@
                <!-- Background image for card set in CSS! -->
             </div>
             <div class="card-body">
-              <h5 class="card-title text-center">Add Event</h5>
-              <form class="form-signin" method="POST" enctype="multipart/form-data">
+
+              <!-- EDIT STUFF -->
+              <h5 class="card-title text-center">Edit Account</h5>
+              <form class="form-signin" method="POST">
                 {% csrf_token %}
+                <h5>Account</h5>
                 <div class="form-group">
-                  <input type="text" id="inputEventName" class="form-control" placeholder="Event Name" name="event_name" required autofocus>
+                  <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="inputUsername"  required autofocus value={{ username }} >
+                </div>
+                <div class="form-group">
+                  <input type="email" id="inputEmail" class="form-control" placeholder="Email" name="inputEmail"  required autofocus value={{ email }} >
                 </div>
 
-                <div class="form-group">
-                  <input type="text" id="inputLink" class="form-control" placeholder="External Link" name="link">
-                </div>
-
+                {% if isOrg %}
                 <hr>
-
+                <h5>Organization</h5>
                 <div class="form-group">
-                  <input type="text" id="placesSearch" class="form-control" name="location" placeholder="Building/Location" required>
+                  <input type="text" class="form-control" placeholder="Name" name="orgName"  required autofocus value="{{ org.orgName }}"" >
                 </div>
-
-                <script>
-                  var input = document.getElementById('placesSearch');
-
-                  var defaultBounds = new google.maps.LatLngBounds(
-                    new google.maps.LatLng(40.502779, -74.525083),
-                    new google.maps.LatLng(40.525226, -74.407718));
-
-                  var options = {
-                    bounds: defaultBounds,
-                    strictBounds: true
-                  };
-
-                  var autocomplete = new google.maps.places.Autocomplete(input,options);
-
-                  autocomplete.setFields(['place_id', 'geometry']);
-
-                  autocomplete.addListener('place_changed', function() {
-
-                      var place = autocomplete.getPlace();
-                      var lat = place.geometry.location.lat();
-                      var lng = place.geometry.location.lng()
-
-                      console.log(place);
-                      console.log(lat);
-                      console.log(lng);
-
-                      document.getElementById('inputLat').value = lat;
-                      document.getElementById('inputLong').value = lng;
-
-                    });
-
-                </script>
-
-                <input type="hidden" id="inputLat" name="latitude">
-                <input type="hidden" id="inputLong" name="longitude">
-
                 <div class="form-group">
-                  <input type="text" id="inputRoom" class="form-control" placeholder="Room" name="room">
+                  <input type="text" class="form-control" placeholder="Location" name="orgLocation" required autofocus value="{{org.orgLocation}}" >
                 </div>
-
-                <hr>
-
                 <div class="form-group">
-                    <div class="input-group date" id="datepicker" data-target-input="nearest">
-                        <input type="text" class="form-control datetimepicker-input" data-target="#datepicker" name="date" placeholder="Date" required/>
-                        <div class="input-group-append" data-target="#datepicker" data-toggle="datetimepicker">
-                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                        </div>
-                    </div>
+                  <input type="text" class="form-control" placeholder="Link" name="orgWebsite"  required autofocus value="{{ org.orgWebsite }}" >
                 </div>
-
-                <div class="row">
-                  <div class="col">
-                    <div class="form-group">
-                        <div class="input-group date" id="starttimepicker" data-target-input="nearest">
-                            <input type="text" class="form-control datetimepicker-input" data-target="#starttimepicker" name="start_time" placeholder="Start Time" required/>
-                            <div class="input-group-append" data-target="#starttimepicker" data-toggle="datetimepicker">
-                                <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class="form-group">
-                        <div class="input-group date" id="endtimepicker" data-target-input="nearest">
-                            <input type="text" class="form-control datetimepicker-input" data-target="#endtimepicker" name="end_time" placeholder="End Time" required/>
-                            <div class="input-group-append" data-target="#endtimepicker" data-toggle="datetimepicker">
-                                <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                  </div>
-                </div>
-
-                <hr>
-
                 <div class="form-group">
                   <label for="inputDescription">Description</label>
-                  <textarea class="form-control rounded-0" id="inputDescription" rows="15" name="description"></textarea>
+                  <textarea class="form-control rounded-0" id="inputDescription" rows="15" name="description">{{org.orgDescription}}</textarea>
                 </div>
+
+                {% endif %}
 
                 <hr>
-
-                <div class="form-group">
-                  <label for="eventImage">Image</label><br>
-                  <input type="file" id="eventImage" name="image" accept="image/*">
-                </div>
-
-                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Create Event</button>
+                <input type="hidden" name="userID" value={{userID}}>
+                <input type="hidden" name="authID" value={{authID}}>
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Update</button>
               </form>
-            </div>
           </div>
         </div>
       </div>
@@ -217,17 +146,3 @@
 
   </body>
 </html>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#starttimepicker').datetimepicker({
-        format: 'LT'
-    });
-    $('#endtimepicker').datetimepicker({
-        format: 'LT'
-    });
-    $('#datepicker').datetimepicker({
-        format: 'L'
-    });
-  });
-</script>

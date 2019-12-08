@@ -4,6 +4,8 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.core.serializers import serialize
 
+from django.contrib.auth.models import User
+
 from geojson import Point, Feature, FeatureCollection
 import json
 from .models import *
@@ -49,6 +51,8 @@ def register_account(request):
         #inserting new account into db
         account = Account(username=inputUsername,password=inputPassword,email=inputEmail,isOrg=isOrg)
         account.save()
+        user = User.objects.create_user(inputUsername, inputEmail, inputPassword)
+        user.save()
         register_results = {
             'status': "success"
         }
@@ -125,7 +129,6 @@ def get_orgs(request):
 
 def post_new_event(request):
     eventName = request.POST.get("event_name")
-    organization = request.POST.get("organization")
     location = request.POST.get("location")
     room = request.POST.get("room")
     date = request.POST.get("date")
@@ -134,7 +137,11 @@ def post_new_event(request):
     lat = request.POST.get("latitude")
     long = request.POST.get("longitude")
     description = request.POST.get("description")
-    image = request.FILES["image"]
+    link = request.POST.get("link")
+    try:
+        image = request.FILES["image"]
+    except:
+        image = None
     print(image)
 
     # Convert 12 hour time into 24 hour time then into time object
@@ -165,6 +172,11 @@ def post_new_event(request):
         }
         return create_event_results
 
+    # Get org
+    user = Account.objects.filter(username=request.user.username).first()
+    org_object = Organization.objects.filter(ownerID=user.id).first()
+    organization = org_object.name
+
     if Event.objects.filter(Q(name=eventName) and Q(organization=organization) and Q(date=dt)).count() > 0:
         print("DUPLICATE EVENT")
         create_event_results = {
@@ -173,7 +185,7 @@ def post_new_event(request):
         }
         return create_event_results
 
-    event = Event(name=eventName, date=dt, end_date=dt2, host_org=organization, description=description, longitude=long, latitude=lat, location=location, room=room, image=image)
+    event = Event(name=eventName, date=dt, end_date=dt2, host_org=organization, description=description, longitude=long, latitude=lat, location=location, room=room, image=image, link=link)
     event.save()
     create_event_results = {
         'status': "success"
@@ -210,10 +222,8 @@ def populate_org_details(request):
         'org_events': eventsList
     }
 
-def get_event_details(request):
-        event_ID = request.GET.get("eventID")
-
-        event = Event.objects.filter(id=event_ID).first()
+def get_event_details(id):
+        event = Event.objects.filter(id=id).first()
         event_info_dict = {
             'name': event.name,
             'org' : event.host_org,
@@ -224,7 +234,105 @@ def get_event_details(request):
             'end_date': event.end_date,
             'long': event.longitude,
             'lat': event.latitude,
-            'image': event.image
+            'image': event.image,
+            'link': event.link
         }
 
         return event_info_dict
+
+def update_event_details(request, id):
+    event = Event.objects.filter(id=id).first()
+
+    event.name = request.POST.get("event_name")
+    event.location = request.POST.get("location")
+    event.room = request.POST.get("room")
+    event.latitude = request.POST.get("latitude")
+    event.longitude = request.POST.get("longitude")
+    event.description = request.POST.get("description")
+    event.link = request.POST.get("link")
+    try:
+        image = request.FILES["image"]
+        event.image = image
+    except:
+        image = None
+
+    date = request.POST.get("date")
+    start_time = request.POST.get("start_time")
+    end_time = request.POST.get("end_time")
+    # Convert 12 hour time into 24 hour time then into time object
+    in_time = datetime.strptime(start_time, "%I:%M %p")
+    out_time = datetime.strftime(in_time, "%H:%M")
+    time_object = datetime.strptime(out_time, '%H:%M').time()
+
+    # Convert date string into date object
+    date_object = datetime.strptime(date, '%m/%d/%Y').date()
+
+    # Combine time and date to suitable format for database
+    dt = datetime.combine(date_object, time_object)
+
+    # Do same for end time
+    in_time = datetime.strptime(end_time, "%I:%M %p")
+    out_time = datetime.strftime(in_time, "%H:%M")
+    time_object = datetime.strptime(out_time, '%H:%M').time()
+
+    dt2 = datetime.combine(date_object, time_object)
+
+    event.date = dt
+    event.end_date = dt2
+
+    event.save()
+    create_event_results = {
+        'status': "success"
+    }
+    return create_event_results
+
+# Check is a username is an organization
+def checkIfOrg(username):
+    user = Account.objects.filter(username=username).first()
+    if(user.isOrg == 1):
+        return (True, user.id)
+    else:
+        return (False, user.id)
+
+def getOrgFromOwnerID(id):
+    org = Organization.objects.filter(ownerID=id).first()
+    print(org)
+    org_info_dict = {
+            'orgName': org.name,
+            'orgLocation': org.location,
+            'orgDescription': org.description,
+            'orgWebsite': org.website
+    }
+    return org_info_dict
+
+def update_account_details(request):
+    authID = request.POST.get("authID")
+    authUser = User.objects.get(id=authID)
+
+    userID = request.POST.get("userID")
+    user = Account.objects.get(id=userID)
+
+    username = request.POST.get("inputUsername")
+    email = request.POST.get("inputEmail")
+
+    authUser.username = username
+    authUser.email = email
+    authUser.save()
+
+    user.username = username
+    user.email = email
+    user.save()
+
+    print(user.username)
+
+    isOrg = checkIfOrg(user.username)
+
+    if isOrg:
+        Organization.objects.filter(ownerID=userID).delete()
+        org = Organization(name=request.POST.get("orgName"), location=request.POST.get("orgLocation"),website=request.POST.get("orgWebsite"),description=request.POST.get("description"),ownerID=userID)
+        org.save()
+        # org.name = request.POST.get("orgName")
+        # org.location = request.POST.get("orgLocation")
+        # org.website = request.POST.get("orgWebsite")
+        # org.description = request.POST.get("description")
+        # org.save()

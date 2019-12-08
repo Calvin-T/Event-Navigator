@@ -1,17 +1,21 @@
-
+:root {
+  --input-padding-x: 1.5rem;
+  --input-padding-y: .75rem;
+}
 
 body {
-  background: url("/static/images/rac.jpg");
+  background: url("/static/images/stadium.jpg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-
 }
 
 .card {
   opacity: 95%;
-  padding: 1em;
-  margin-top: 0;
+}
+
+.card h2 {
+  text-align: center;
 }
 
 .card-signin {
@@ -46,7 +50,6 @@ body {
 .form-label-group {
   position: relative;
   margin-bottom: 1rem;
-  z-index: 2000;
 }
 
 .form-label-group input {
@@ -106,6 +109,10 @@ body {
   color: #777;
 }
 
+.btn-google {
+  color: white;
+  background-color: #ea4335;
+}
 
 
 
@@ -132,30 +139,4 @@ body {
   .form-label-group input:-ms-input-placeholder {
     color: #777;
   }
-}
-
-
-.container {
-  margin: 1.5em;
-}
-
-
-#map img{
-  width: 100%;
-  height: 100%;
-  margin: auto;
-  float: right;
-  padding-top: 1.5em;
-}
-
-#map p {
-  font-size: 11px;
-  float: right;
-}
-
-@media only screen and (max-width: 770px) {
-    #map {
-      height: 50%;
-      margin-bottom: 50vh;
-    }
 }

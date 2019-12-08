@@ -46,6 +46,7 @@ body {
 .form-label-group {
   position: relative;
   margin-bottom: 1rem;
+  width: 100%;
 }
 
 .form-label-group input {

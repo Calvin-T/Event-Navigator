@@ -10,6 +10,10 @@ body {
   background-attachment: fixed;
 }
 
+h5 {
+  text-align: center;
+}
+
 .card {
   opacity: 95%;
 }
