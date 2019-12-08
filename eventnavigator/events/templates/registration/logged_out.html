@@ -3,15 +3,14 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Event Navigator | Add Event</title>
+    <title>Event Navigator | Login</title>
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/main.css' %}" />
-    <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/event-detail.css' %}" />
-
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/login.css' %}" />
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -20,18 +19,8 @@
     <!-- Material Design for Bootstrap -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.16/css/mdb.min.css" rel="stylesheet">
 
-    <!-- Mapbox -->
-    <script src='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
-
   </head>
   <body>
-
-    <!-- bootstrap js, jquery, popper js -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.16/js/mdb.min.js"></script>
 
     <nav class="navbar navbar-dark navbar-expand-md bg-faded justify-content-center">
         <a class="navbar-brand d-flex w-50 mr-auto" style="cursor:default; color:white;">EventNavigator</a>
@@ -77,54 +66,24 @@
         </div>
     </nav>
 
-    <!-- Page Content -->
+
+
     <div class="container">
-
-        <!-- Portfolio Item Row -->
-        <div class="row">
-          <div class="col-md-4">
-            <div class="card">
-              <h2 class="my-2">{{ event.name }}</h2>
-              <h4>{{ event.org }}</h4>
-              <h6 class="my-2">Location: {{ event.location }} </h5>
-              {% if event.room %}
-              <h6 class="my-2">Room: {{ event.room }} </h5>
-              {% endif %}
-              <h6 class="my-2">Time: {{ event.start_date }} - {{ event.end_date }} </h5>
-              {% if event.link %}
-              <h6 class="my-2">Link: <a href="{{ event.link }}"> {{ event.link }}</a> </h5>
-              {% endif %}
-              <hr style="width: 100%; color: white; height: 1px; background-color:white;" />
-              <p>{{ event.description }}</p>
-            </div>
+      <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+          <div class="card my-5">
+            <p>You are logged out!</p>
+            <a  href="{% url 'login' %}">Log in again</a>
           </div>
-
-          <div class="col-md-5">
-            <div class="card">
-              {% if hasImage %}
-              <img class="img-fluid" src="media/{{ event.image }}" alt="" id="event-image">
-              {% endif %}
-              <div id='map'>
-                <img src={{map_link}} style="background-image: url({{map_link}});">
-                <p>© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a></p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-3">
-            <div class="card">
-              Comments
-            </div>
-          </div>
-
-
         </div>
-        <!-- /.row -->
-
       </div>
-
     </div>
-    <!-- /.container -->
+
+    <!-- bootstrap js, jquery, popper js -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.16/js/mdb.min.js"></script>
 
   </body>
 </html>

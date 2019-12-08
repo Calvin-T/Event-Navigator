@@ -4,6 +4,8 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.core.serializers import serialize
 
+from django.contrib.auth.models import User
+
 from geojson import Point, Feature, FeatureCollection
 import json
 from .models import *
@@ -49,6 +51,8 @@ def register_account(request):
         #inserting new account into db
         account = Account(username=inputUsername,password=inputPassword,email=inputEmail,isOrg=isOrg)
         account.save()
+        user = User.objects.create_user(inputUsername, inputEmail, inputPassword)
+        user.save()
         register_results = {
             'status': "success"
         }
@@ -121,7 +125,6 @@ def get_orgs(request):
 
 def post_new_event(request):
     eventName = request.POST.get("event_name")
-    organization = request.POST.get("organization")
     location = request.POST.get("location")
     room = request.POST.get("room")
     date = request.POST.get("date")
@@ -164,6 +167,11 @@ def post_new_event(request):
             'message': "Start time later than end time."
         }
         return create_event_results
+
+    # Get org
+    user = Account.objects.filter(username=request.user.username).first()
+    org_object = Organization.objects.filter(ownerID=user.id).first()
+    organization = org_object.name
 
     if Event.objects.filter(Q(name=eventName) and Q(organization=organization) and Q(date=dt)).count() > 0:
         print("DUPLICATE EVENT")
@@ -232,7 +240,6 @@ def update_event_details(request, id):
     event = Event.objects.filter(id=id).first()
 
     event.name = request.POST.get("event_name")
-    event.host_org = request.POST.get("organization")
     event.location = request.POST.get("location")
     event.room = request.POST.get("room")
     event.latitude = request.POST.get("latitude")
@@ -274,3 +281,54 @@ def update_event_details(request, id):
         'status': "success"
     }
     return create_event_results
+
+# Check is a username is an organization
+def checkIfOrg(username):
+    user = Account.objects.filter(username=username).first()
+    if(user.isOrg == 1):
+        return (True, user.id)
+    else:
+        return (False, user.id)
+
+def getOrgFromOwnerID(id):
+    org = Organization.objects.filter(ownerID=id).first()
+    print(org)
+    org_info_dict = {
+            'orgName': org.name,
+            'orgLocation': org.location,
+            'orgDescription': org.description,
+            'orgWebsite': org.website
+    }
+    return org_info_dict
+
+def update_account_details(request):
+    authID = request.POST.get("authID")
+    authUser = User.objects.get(id=authID)
+
+    userID = request.POST.get("userID")
+    user = Account.objects.get(id=userID)
+
+    username = request.POST.get("inputUsername")
+    email = request.POST.get("inputEmail")
+
+    authUser.username = username
+    authUser.email = email
+    authUser.save()
+
+    user.username = username
+    user.email = email
+    user.save()
+
+    print(user.username)
+
+    isOrg = checkIfOrg(user.username)
+
+    if isOrg:
+        Organization.objects.filter(ownerID=userID).delete()
+        org = Organization(name=request.POST.get("orgName"), location=request.POST.get("orgLocation"),website=request.POST.get("orgWebsite"),description=request.POST.get("description"),ownerID=userID)
+        org.save()
+        # org.name = request.POST.get("orgName")
+        # org.location = request.POST.get("orgLocation")
+        # org.website = request.POST.get("orgWebsite")
+        # org.description = request.POST.get("description")
+        # org.save()

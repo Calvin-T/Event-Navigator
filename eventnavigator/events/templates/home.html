@@ -49,20 +49,34 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-organizations' %}">Organizations</a>
                 </li>
+                {% if user.is_authenticated %}
+                {% if hasOrg %}
+                <li class="nav-item">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'events-add-event' %}">Add Event</a>
+                  </li>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'events-account-detail' %}">Account</a>
+                  </li>
+                </li>
+              </ul>
+              <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+                <a class="nav-link" href="{% url 'events-logout' %}">Logout</a>
+              </ul>
+                {% else %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-login' %}">Login</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-register' %}">Register</a>
                 </li>
-            </ul>
-            <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-              <form class="form-inline">
-                <div class="md-form my-0">
-                  <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" style="width: 270px">
-                </div>
-              </form>
-            </ul>
+              </ul>
+              <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+              </ul>
+                {% endif %}
         </div>
     </nav>
     <style>

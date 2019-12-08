@@ -4,7 +4,7 @@
 }
 
 body {
-  background: url("/static/images/business_school.jpg");
+  background: url("/static/images/stadium.jpg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -12,6 +12,10 @@ body {
 
 .card {
   opacity: 95%;
+}
+
+.card h2 {
+  text-align: center;
 }
 
 .card-signin {
@@ -46,7 +50,6 @@ body {
 .form-label-group {
   position: relative;
   margin-bottom: 1rem;
-  width: 100%;
 }
 
 .form-label-group input {

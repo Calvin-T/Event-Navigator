@@ -1,10 +1,12 @@
 from django.urls import path
+from django.contrib.auth import views as authviews
 from . import views
 
 urlpatterns = [
 
     path('', views.home, name='events-home'),
-    path('login', views.login, name='events-login'),
+    path('login', authviews.LoginView.as_view(), name='events-login'),
+    path('logout', authviews.LogoutView.as_view(), name='events-logout'),
     path('register', views.register, name='events-register'),
     path('organizations', views.organizations, name='events-organizations'),
     path('account-details', views.account_details, name='events-account-detail'),

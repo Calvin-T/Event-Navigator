@@ -42,26 +42,40 @@
         </button>
         <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
             <ul class="navbar-nav w-100 justify-content-center">
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'events-home' %}">Events</a>
+                <li class="nav-item active">
+                  <a class="nav-link" href="{% url 'events-home' %}">Events<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-organizations' %}">Organizations</a>
                 </li>
+                {% if user.is_authenticated %}
+                {% if hasOrg %}
+                <li class="nav-item">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'events-add-event' %}">Add Event</a>
+                  </li>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'events-account-detail' %}">Account</a>
+                  </li>
+                </li>
+              </ul>
+              <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+                <a class="nav-link" href="{% url 'events-logout' %}">Logout</a>
+              </ul>
+                {% else %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-login' %}">Login</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-register' %}">Register</a>
                 </li>
-            </ul>
-            <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-              <form class="form-inline">
-                <div class="md-form my-0">
-                  <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" style="width: 270px">
-                </div>
-              </form>
-            </ul>
+              </ul>
+              <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+              </ul>
+                {% endif %}
         </div>
     </nav>
 
@@ -95,10 +109,6 @@
                 {% csrf_token %}
                 <div class="form-group">
                   <input type="text" id="inputEventName" class="form-control" placeholder="Event Name" name="event_name" value="{{event.name}}" required autofocus>
-                </div>
-
-                <div class="form-group">
-                  <input type="text" id="inputOrganization" class="form-control" placeholder="Organization" name="organization" value="{{event.org}}" required>
                 </div>
 
                 <div class="form-group">
@@ -200,7 +210,7 @@
                   <label>Current:</label>
                   <img class="img-fluid" src="media/{{ event.image }}" alt="" id="event-image">
                   {% endif %}
-                  <input type="file" id="eventImage" name="image" accept="image/*"">
+                  <input type="file" id="eventImage" name="image" accept="image/*">
                 </div>
 
                 <input type="hidden" id="id" name="eventID" value={{id}}>
