@@ -289,11 +289,13 @@ def update_event_details(request, id):
 # Check is a username is an organization
 def checkIfOrg(username):
     user = Account.objects.filter(username=username).first()
-    if(user.isOrg == 1):
-        return (True, user.id)
+    if user != None:
+        if(user.isOrg == 1):
+            return (True, user.id)
+        else:
+            return (False, user.id)
     else:
-        return (False, user.id)
-
+        return (False,-1)
 def getOrgFromOwnerID(id):
     org = Organization.objects.filter(ownerID=id).first()
     print(org)
@@ -319,6 +321,8 @@ def update_account_details(request):
     authUser.email = email
     authUser.save()
 
+    old_username = user.username
+
     user.username = username
     user.email = email
     user.save()
@@ -328,6 +332,11 @@ def update_account_details(request):
     isOrg = checkIfOrg(user.username)
 
     if isOrg:
+        org = Organization.objects.get(ownerID=userID)
+        events = Event.objects.filter(host_org=org.name)
+        for event in events:
+            event.host_org = request.POST.get("orgName")
+            event.save()
         Organization.objects.filter(ownerID=userID).delete()
         org = Organization(name=request.POST.get("orgName"), location=request.POST.get("orgLocation"),website=request.POST.get("orgWebsite"),description=request.POST.get("description"),ownerID=userID)
         org.save()

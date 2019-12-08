@@ -81,7 +81,7 @@ def org_details(request):
         isOwner = False
         if request.user.is_authenticated:
             isOrg = checkIfOrg(request.user.username)
-            if isOrg:
+            if isOrg[0]:
                 # Check if it is signed in users org
                 user = Account.objects.filter(username=request.user.username).first()
                 user_org = getOrgFromOwnerID(user.id)
