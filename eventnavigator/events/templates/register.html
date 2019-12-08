@@ -92,8 +92,8 @@
             <div class="card-body">
               <h5 class="card-title text-center">Register</h5>
 
-              <form class="form-signin" method="POST" action="{% url 'events-login' %}">
-
+              <form class="form-signin" method="POST">
+                {% csrf_token %}
                 <div class="form-label-group">
                   <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="inputUsername"  required autofocus value={{ values.defaultUsername }} >
                   <label for="inputUsername">Username</label>
