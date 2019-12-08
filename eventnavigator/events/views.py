@@ -39,7 +39,6 @@ def organizations(request):
 @csrf_exempt
 def register(request):
     if request.method == 'POST':
-        print('here')
         register_results = register_account(request)
         if register_results['status'] == "error":
             return render(request, 'register.html', {'values': mark_safe(register_results['default_field_values'])})
@@ -47,9 +46,6 @@ def register(request):
             #TODO: add register-successful notification once reaching login.html
             return redirect('events-login')
     return render(request, 'register.html')
-
-def account_details(request):
-    return render(request, 'account-detail.html')
 
 def event_details(request):
     if request.user.is_authenticated:

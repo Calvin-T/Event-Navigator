@@ -24,6 +24,11 @@ def register_account(request):
         inputConfirmPassword = request.POST.get("inputConfirmPassword")
         isOrg = True if request.POST.get("isOrg") == "on" else False
 
+        orgName = request.POST.get("orgName")
+        orgLocation = request.POST.get("orgLocation")
+        orgWebsite = request.POST.get("orgWebsite")
+        orgDescription = request.POST.get("description")
+
         if inputPassword != inputConfirmPassword:
             messages.error(request,'Error: Passwords do not match! Please try again')
             register_results = {
@@ -48,9 +53,29 @@ def register_account(request):
             }
             print('[DEBUG] RETURN: -1 (Username/Email exists)')
             return register_results
+
+        if isOrg:
+            if Organization.objects.filter(name=orgName).count() > 0:
+                messages.error(request,'Error: Organization already exists! Please try again')
+                register_results = {
+                    'status': "error",
+                    'default_field_values': {
+                            'defaultUsername': inputUsername,
+                            'defaultEmail': inputEmail,
+                            'defaultIsOrg': isOrg
+                        }
+                }
+                print('[DEBUG] RETURN: -1 (Username/Email exists)')
+                return register_results
+
         #inserting new account into db
         account = Account(username=inputUsername,password=inputPassword,email=inputEmail,isOrg=isOrg)
         account.save()
+        if isOrg:
+            userID = account.id
+            org = Organization(name=orgName,location=orgLocation,website=orgWebsite,description=orgDescription,ownerID=userID)
+            org.save()
+            
         user = User.objects.create_user(inputUsername, inputEmail, inputPassword)
         user.save()
         register_results = {

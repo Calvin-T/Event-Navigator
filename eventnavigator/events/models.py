@@ -25,3 +25,10 @@ class Organization(models.Model):
     description = models.CharField(max_length = 1000)
     website = models.CharField(max_length = 200)
     ownerID = models.IntegerField()
+
+class Comments(models.Model):
+    name = models.CharField(max_length=120)
+    userID = models.IntegerField()
+    body = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    eventID = models.IntegerField()

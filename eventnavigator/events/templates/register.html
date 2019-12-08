@@ -117,10 +117,27 @@
                 </div>
 
                 <div>
-                  <input type="checkbox" id="isOrgCheckbox" name="isOrg" {% if values.defaultIsOrg %} checked {% endif %}
-                  >
+                  <input type="checkbox" id="isOrgCheckbox" name="isOrg" {% if values.defaultIsOrg %} checked {% endif %} onclick="showOrgForm()">
                   <label for="isOrg"> Student Org?</label>
                 </div>
+
+                <div id="orgForm" style="display:none">
+                  <hr>
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="orgName" placeholder="Organization name" name="orgName" autofocus value="{{ org.orgName }}" >
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Location" name="orgLocation" autofocus value="{{org.orgLocation}}" >
+                  </div>
+                  <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Link" name="orgWebsite" autofocus value="{{ org.orgWebsite }}" >
+                  </div>
+                  <div class="form-group">
+                    <label for="inputDescription">Description</label>
+                    <textarea class="form-control rounded-0" id="inputDescription" rows="15" name="description">{{org.orgDescription}}</textarea>
+                  </div>
+                </div>
+
 
 
                 <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Create Account</button>
@@ -131,6 +148,24 @@
         </div>
       </div>
     </div>
-
   </body>
 </html>
+
+<script>
+function showOrgForm() {
+  // Get the checkbox
+  var checkBox = document.getElementById("isOrgCheckbox");
+  // Get the output text
+  var form = document.getElementById("orgForm");
+  var orgName = document.getElementById("orgName");
+
+  // If the checkbox is checked, display the output text
+  if (checkBox.checked == true){
+    form.style.display = "block";
+    orgName.required = true;
+  } else {
+    form.style.display = "none";
+    orgName.required = false;
+  }
+}
+</script>
