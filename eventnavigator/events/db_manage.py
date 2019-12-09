@@ -67,13 +67,17 @@ def register_account(request):
                 }
                 print('[DEBUG] RETURN: -1 (Username/Email exists)')
                 return register_results
+            try:
+                image = request.FILES["image"]
+            except:
+                image = None
 
         #inserting new account into db
         account = Account(username=inputUsername,password=inputPassword,email=inputEmail,isOrg=isOrg)
         account.save()
         if isOrg:
             userID = account.id
-            org = Organization(name=orgName,location=orgLocation,website=orgWebsite,description=orgDescription,ownerID=userID)
+            org = Organization(name=orgName,location=orgLocation,website=orgWebsite,description=orgDescription,ownerID=userID,image=image)
             org.save()
 
         user = User.objects.create_user(inputUsername, inputEmail, inputPassword)
@@ -145,7 +149,9 @@ def get_orgs(request):
         for organization in organizations:
             temp = {
                 'orgName': organization.name,
-                'orgLoc': organization.location
+                'orgLoc': organization.location,
+                'orgWebsite': organization.website,
+                'orgDescription': organization.description
             }
             organizationList.append(temp)
         return {
@@ -229,7 +235,8 @@ def populate_org_details(request):
             'orgName': org_name,
             'orgLocation': org.location,
             'orgDescription': org.description,
-            'orgWebsite': org.website
+            'orgWebsite': org.website,
+            'image': org.image
     }
     events = Event.objects.filter(host_org=org_name)
     eventsList = []
@@ -329,7 +336,8 @@ def getOrgFromOwnerID(id):
             'orgName': org.name,
             'orgLocation': org.location,
             'orgDescription': org.description,
-            'orgWebsite': org.website
+            'orgWebsite': org.website,
+            'image': org.image
     }
     return org_info_dict
 
@@ -357,14 +365,20 @@ def update_account_details(request):
 
     isOrg = checkIfOrg(user.username)
 
-    if isOrg:
+    if isOrg[0]:
         org = Organization.objects.get(ownerID=userID)
         events = Event.objects.filter(host_org=org.name)
         for event in events:
             event.host_org = request.POST.get("orgName")
             event.save()
         Organization.objects.filter(ownerID=userID).delete()
-        org = Organization(name=request.POST.get("orgName"), location=request.POST.get("orgLocation"),website=request.POST.get("orgWebsite"),description=request.POST.get("description"),ownerID=userID)
+        try:
+            image = request.FILES["image"]
+        except:
+            image = None
+        print("IMAGE")
+        print(image)
+        org = Organization(name=request.POST.get("orgName"), location=request.POST.get("orgLocation"),website=request.POST.get("orgWebsite"),description=request.POST.get("description"),ownerID=userID, image=image)
         org.save()
         # org.name = request.POST.get("orgName")
         # org.location = request.POST.get("orgLocation")

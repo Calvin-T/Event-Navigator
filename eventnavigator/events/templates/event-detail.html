@@ -47,7 +47,7 @@
                   <a class="nav-link" href="{% url 'events-organizations' %}">Organizations</a>
                 </li>
                 {% if user.is_authenticated %}
-                {% if hasOrg %}
+                {% if isOrg %}
                 <li class="nav-item">
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'events-add-event' %}">Add Event</a>

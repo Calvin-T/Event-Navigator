@@ -28,11 +28,13 @@ def organizations(request):
     if request.user.is_authenticated:
         print("Logged in ORGS")
         print(request.user.username)
+        isOrg = checkIfOrg(request.user.username)
     else:
         print("Not logged in ORGS")
+        isOrg = [False]
     if request.method == 'GET':
         organizations = get_orgs(request);
-    return render(request, 'organizations.html',  {'organizations': organizations['organizationList']})
+    return render(request, 'organizations.html',  {'organizations': organizations['organizationList'], 'isOrg': isOrg[0]})
 
 
 # @csrf_except used for 403 errors on POST request, might need another fix.
@@ -54,11 +56,14 @@ def event_details(request):
     if request.user.is_authenticated:
         loggedin = 'true'
         print(request.user.username)
+        isOrg = checkIfOrg(request.user.username)
     else:
         print("Not logged in EVENT D")
     id = request.POST.get("eventID")
+    isOrg = [False]
     if not id:
         return home(request)
+
     event = get_event_details(id)
     long = event['long']
     lat = event['lat']
@@ -70,7 +75,8 @@ def event_details(request):
     if image == '':
         hasImage = False
     comments = load_n_post_comments(request)
-    return render(request, 'event-detail.html', {'event': event , 'map_link': link, 'hasImage': hasImage, 'loggedin':loggedin, 'comments': comments})
+    return render(request, 'event-detail.html', {'event': event , 'map_link': link, 'hasImage': hasImage, 'loggedin':loggedin, 'comments': comments, 'isOrg': isOrg[0]})
+
 
 def org_details(request):
     if request.user.is_authenticated:
@@ -78,6 +84,7 @@ def org_details(request):
         print(request.user.username)
     else:
         print("Not logged in ORG D")
+        isOrg = [False]
     if request.method == 'GET':
         isOwner = False
         if request.user.is_authenticated:
@@ -92,31 +99,52 @@ def org_details(request):
                 if user_org['orgName'] == org_name:
                     isOwner = True
         populator = populate_org_details(request)
-        return render(request, 'org-detail.html', {'info': populator['org_info'], 'events': populator['org_events'], 'isOwner': isOwner})
+        image = populator['org_info']['image']
+        hasImage = True
+        if image == '':
+            hasImage = False
+        return render(request, 'org-detail.html', {'info': populator['org_info'], 'events': populator['org_events'], 'isOwner': isOwner, 'isOrg':isOrg[0],'hasImage': hasImage})
     else:
         id = request.POST.get('eventID')
         Event.objects.filter(id=id).delete()
         print("DELETED EVENT")
+        if request.user.is_authenticated:
+            isOrg = checkIfOrg(request.user.username)
+            if isOrg[0]:
+                # Check if it is signed in users org
+                user = Account.objects.filter(username=request.user.username).first()
+                user_org = getOrgFromOwnerID(user.id)
+                org_name = request.GET.get("hostOrg")
+                print(user_org['orgName'])
+                print(org_name)
+                if user_org['orgName'] == org_name:
+                    isOwner = True
         populator = populate_org_details(request)
-        return render(request, 'org-detail.html', {'info': populator['org_info'], 'events': populator['org_events']})
+        image = populator['org_info']['image']
+        hasImage = True
+        if image == '':
+            hasImage = False
+        return render(request, 'org-detail.html', {'info': populator['org_info'], 'events': populator['org_events'],'isOwner': isOwner, 'isOrg':isOrg[0],'hasImage': hasImage})
 
 
 def add_event(request):
     if request.user.is_authenticated:
         print("Logged in ADD E")
         print(request.user.username)
+        isOrg = checkIfOrg(request.user.username)
     else:
         print("Not logged in ADD E")
+        isOrg = [False]
     if request.method == 'POST':
         print("POST")
         create_event_results = post_new_event(request)
         if create_event_results['status'] == "error":
             messages.error(request, create_event_results['message'])
-            return render(request, 'add-event.html')
+            return render(request, 'add-event.html',{'isOrg':isOrg[0]})
         else:
             messages.success(request, 'Successfully created new event!')
-            return render(request, 'add-event.html')
-    return render(request, 'add-event.html')
+            return render(request, 'add-event.html',{'isOrg':isOrg[0]})
+    return render(request, 'add-event.html',{'isOrg':isOrg[0]})
 
 def edit_event(request):
     if request.user.is_authenticated:
@@ -176,10 +204,14 @@ def account_details(request):
 
     isOrg = checkIfOrg(username)
     org = {}
+    hasImage = False
     if isOrg[0]:
         org = getOrgFromOwnerID(userID)
+        orgImage = org['image']
+        if orgImage != '':
+            hasImage = True
 
-    return render(request, 'account-detail.html', {'username': username, 'email': email,'isOrg':isOrg[0], 'org':org, 'userID': userID, 'authID': authID})
+    return render(request, 'account-detail.html', {'username': username, 'email': email,'isOrg':isOrg[0], 'org':org, 'userID': userID, 'authID': authID, 'hasImage':hasImage})
 
 
 def edit_account(request):
@@ -197,12 +229,15 @@ def edit_account(request):
         orgLocation = request.GET.get("orgLocation")
         orgWebsite = request.GET.get("orgWebsite")
         orgDescription = request.GET.get("orgDescription")
-        org = {'orgName': orgName, 'orgLocation': orgLocation, 'orgWebsite': orgWebsite, 'orgDescription': orgDescription}
-
+        orgImage = request.GET.get("orgImage")
+        org = {'orgName': orgName, 'orgLocation': orgLocation, 'orgWebsite': orgWebsite, 'orgDescription': orgDescription, 'image':orgImage}
+        hasImage = True
+        if orgImage == '':
+            hasImage = False
         userID = request.GET.get("userID")
         authID = request.GET.get("authID")
 
-        return render(request, 'edit-account.html', {'username': username, 'email': email,'isOrg':isOrg[0], 'org': org, 'userID': userID, 'authID': authID})
+        return render(request, 'edit-account.html', {'username': username, 'email': email,'isOrg':isOrg[0], 'org': org, 'userID': userID, 'authID': authID, 'hasImage': hasImage})
     else:
         update_account_details(request)
         return redirect('events-account-detail')

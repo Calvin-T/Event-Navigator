@@ -46,14 +46,14 @@
         </button>
         <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
             <ul class="navbar-nav w-100 justify-content-center">
-                <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'events-home' %}">Events<span class="sr-only">(current)</span></a>
-                </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'events-organizations' %}">Organizations</a>
+                  <a class="nav-link" href="{% url 'events-home' %}">Events</a>
+                </li>
+                <li class="nav-item active">
+                  <a class="nav-link" href="{% url 'events-organizations' %}">Organizations<span class="sr-only">(current)</span></a>
                 </li>
                 {% if user.is_authenticated %}
-                {% if hasOrg %}
+                {% if isOrg %}
                 <li class="nav-item">
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'events-add-event' %}">Add Event</a>
@@ -90,71 +90,80 @@
         <!-- Portfolio Item Row -->
         <div class="row">
           <div class="col-md-4">
-            <h2 class="my-2">{{info.orgName}}</h2>
-            <img class="img-fluid" src="http://placehold.it/750x500" alt="" id="event-image">
-            <h5 class="my-2">Link: {{info.orgWebsite}}</h5>
-            <hr style="width: 100%; color: white; height: 1px; background-color:white;" />
-            <p>{{info.orgDescription}}</p>
+            <div class="card">
+              <h2 class="my-2">{{info.orgName}}</h2>
+              {% if hasImage %}
+              <img class="img-fluid" src="media/{{ info.image }}" alt="" id="event-image">
+              {% endif %}
+              {% if info.orgWebsite %}
+              <h5 class="my-2">Link: <a href="{{info.orgWebsite}}" style="color:white;">{{info.orgWebsite}}</a></h5>
+              {% endif %}
+              <hr style="width: 100%; color: white; height: 1px; background-color:white;" />
+              <p>{{info.orgDescription}}</p>
+            </div>
           </div>
 
           <div class="col-md-8">
-            <table id="events_table" class="table table-hover table-dark">
-              <thead>
-                  <tr>
-                      <th>eventID</th>
-                      <th>Name</th>
-                      <th>Time</th>
-                      <th>Location</th>
-                      {% if isOwner %}
-                      <th>Edit</th>
-                      <th>Delete</th>
-                      {% endif %}
-                  </tr>
-              </thead>
-              <tbody>
-                {% for event in events %}
-                     <tr data-href="event-details">
-                       <td>{{ event.eventID }}</td>
-                       <td>{{ event.eventName}}</td>
-                       <td>{{ event.eventDate}}</td>
-                       <td>{{ event.eventLocation}}</td>
-                       {% if isOwner %}
-                       <td>
-                         <form class="flex-container" method="GET" action="{% url 'events-edit-event' %}" >
-                          {% csrf_token %}
-                          <div class="input-group">
-                            <input type="hidden" name="eventID" value="{{event.eventID}}">
-                            <button name="edit" type="submit" class="btn btn-outline-primary waves-effect btn-sm">Edit</button>
-                          </div>
-                          </form>
-                       </td>
-                       <td>
-                         <form class="flex-container" method="POST" >
-                          {% csrf_token %}
-                          <div class="input-group">
-                            <input type="hidden" name="eventID" value="{{event.eventID}}">
-                            <button name="delete" type="submit" class="btn btn-outline-danger waves-effect btn-sm">Delete</button>
-                          </div>
-                          </form>
-                       </td>
-                       {% endif %}
-                      </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            <script>
+            <div class="card">
+              <table id="events_table" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>eventID</th>
+                        <th>Name</th>
+                        <th>Time</th>
+                        <th>Location</th>
+                        {% if isOwner %}
+                        <th>Edit</th>
+                        <th>Delete</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for event in events %}
+                       <tr data-href="event-details">
+                         <td>{{ event.eventID }}</td>
+                         <td>{{ event.eventName}}</td>
+                         <td>{{ event.eventDate}}</td>
+                         <td>{{ event.eventLocation}}</td>
+                         {% if isOwner %}
+                         <td>
+                           <form class="flex-container" method="GET" action="{% url 'events-edit-event' %}" >
+                            {% csrf_token %}
+                            <div class="input-group">
+                              <input type="hidden" name="eventID" value="{{event.eventID}}">
+                              <button name="edit" type="submit" class="btn btn-outline-primary waves-effect btn-sm">Edit</button>
+                            </div>
+                            </form>
+                         </td>
+                         <td>
+                           <form class="flex-container" method="POST" >
+                            {% csrf_token %}
+                            <div class="input-group">
+                              <input type="hidden" name="eventID" value="{{event.eventID}}">
+                              <button name="delete" type="submit" class="btn btn-outline-danger waves-effect btn-sm">Delete</button>
+                            </div>
+                            </form>
+                         </td>
+                         {% endif %}
+                        </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <script>
 
-              document.addEventListener("DOMContentLoaded", (event) => {
-                 const rows = document.querySelectorAll("tr[data-href]");
-                 rows.forEach(row => {
-                   row.addEventListener("click", (event) => {
-                     //index is index based 1. The zero'th index is the table column headers.
-                    var index = event.target.parentElement.rowIndex;
-                    var myTable = document.getElementById("events_table");
-                    var rows = myTable.getElementsByTagName("tr");
-                    var col = rows[index].getElementsByTagName("td");
-                    sendGetRequest("event-details", {eventID: col[0].innerHTML});
+                document.addEventListener("DOMContentLoaded", (event) => {
+                   const rows = document.querySelectorAll("tr[data-href]");
+                   rows.forEach(row => {
+                     row.addEventListener("click", (event) => {
+                       //index is index based 1. The zero'th index is the table column headers.
+                      var index = event.target.parentElement.rowIndex;
+                      var myTable = document.getElementById("events_table");
+                      var rows = myTable.getElementsByTagName("tr");
+                      var col = rows[index].getElementsByTagName("td");
+                      sendGetRequest("event-details", {eventID: col[0].innerHTML});
+                     });
                    });
+
                  });
               });
 
@@ -172,14 +181,11 @@
 
                     form.appendChild(hiddenField);
                   }
+
               }
 
-              document.body.appendChild(form);
-              form.submit();
-            }
-
-            </script>
-
+              </script>
+            </div>
           </div>
         </div>
         <!-- /.row -->

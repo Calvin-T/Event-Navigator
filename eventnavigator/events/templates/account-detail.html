@@ -35,8 +35,8 @@
         </button>
         <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
             <ul class="navbar-nav w-100 justify-content-center">
-                <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'events-home' %}">Events<span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'events-home' %}">Events</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-organizations' %}">Organizations</a>
@@ -50,8 +50,8 @@
                 </li>
                 {% endif %}
                 <li class="nav-item">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events-account-detail' %}">Account</a>
+                  <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'events-account-detail' %}">Account<span class="sr-only">(current)</span></a>
                   </li>
                 </li>
               </ul>
@@ -106,6 +106,12 @@
                 <h5>Description:&nbsp;</h5><br>
                 <p>{{org.orgDescription}}</p>
               </div>
+              {% if hasImage %}
+              <div class="row">
+                <h5>Image:&nbsp;</h5><br>
+                <img class="img-fluid" src="media/{{ org.image }}" alt="" id="org-image">
+              </div>
+              {% endif %}
               {% endif %}
               <hr>
               <div class="col">
@@ -117,6 +123,7 @@
                     <input type="hidden" name="orgLocation" value="{{org.orgLocation}}">
                     <input type="hidden" name="orgWebsite" value="{{org.orgWebsite}}">
                     <input type="hidden" name="orgDescription" value="{{org.orgDescription}}">
+                    <input type="hidden" name="orgImage" value="{{org.image}}">
                     <input type="hidden" name="userID" value={{userID}}>
                     <input type="hidden" name="authID" value={{authID}}>
                     <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Edit Account</button>

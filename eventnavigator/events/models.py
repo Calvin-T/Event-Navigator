@@ -25,6 +25,7 @@ class Organization(models.Model):
     description = models.CharField(max_length = 1000)
     website = models.CharField(max_length = 200)
     ownerID = models.IntegerField()
+    image = models.ImageField(upload_to='org_images',blank=True)
 
 class Comments(models.Model):
     name = models.CharField(max_length=120)

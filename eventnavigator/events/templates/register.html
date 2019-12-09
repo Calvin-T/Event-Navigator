@@ -92,7 +92,7 @@
             <div class="card-body">
               <h5 class="card-title text-center">Register</h5>
 
-              <form class="form-signin" method="POST">
+              <form class="form-signin" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-label-group">
                   <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="inputUsername"  required autofocus value={{ values.defaultUsername }} >
@@ -135,6 +135,10 @@
                   <div class="form-group">
                     <label for="inputDescription">Description</label>
                     <textarea class="form-control rounded-0" id="inputDescription" rows="15" name="description">{{org.orgDescription}}</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="eventImage">Image</label><br>
+                    <input type="file" id="eventImage" name="image" accept="image/*">
                   </div>
                 </div>
 
