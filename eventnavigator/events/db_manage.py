@@ -13,7 +13,7 @@ from .models import *
 from datetime import datetime , timedelta
 from email.utils import parsedate_tz, mktime_tz
 
-# RETURNS: dict containing 'status' and 'default_field_values'
+# RETURNS: dict containing 'status' and 'default_field_values'. Called when the user wants to resigister an new accout in register.html
     # status: results after user attempt to register (succss/fail)
     # default_field_values: only if 'status' = error,used to populate registration from
     #                       last attempted registration
@@ -90,7 +90,7 @@ def register_account(request):
 #RETURNS: dic with 'eventList' and 'featureList', supports filtering by dates and org
     # eventList: list of just each events name and host_org
     # geoData: list of the event's geojson for mapbox
-#TODO: removing events from the past
+# Called by home.html
 def get_events(request):
         filter_start_date = request.POST.get("filter_start_date")
         filter_end_date = request.POST.get("filter_end_date")
@@ -142,7 +142,8 @@ def get_events(request):
                         'org': filter_org
             }
         }
-
+# called by organizations.html
+# returns a list of all orgs from db
 def get_orgs(request):
         organizations = Organization.objects.all()
         organizationList = []
@@ -157,7 +158,7 @@ def get_orgs(request):
         return {
             'organizationList': organizationList
         }
-
+# receives event input from add-event.html and adds it to db
 def post_new_event(request):
     eventName = request.POST.get("event_name")
     location = request.POST.get("location")
@@ -254,6 +255,7 @@ def populate_org_details(request):
         'org_events': eventsList
     }
 
+# RETURNS: a dict of the event information from inputed eventID
 def get_event_details(id):
         event = Event.objects.filter(id=id).first()
         event_info_dict = {
@@ -272,7 +274,8 @@ def get_event_details(id):
         }
 
         return event_info_dict
-
+# used to update the event info based on eventID
+# called by edit-event.html
 def update_event_details(request, id):
     event = Event.objects.filter(id=id).first()
 
@@ -329,6 +332,8 @@ def checkIfOrg(username):
             return (False, user.id)
     else:
         return (False,-1)
+
+# Get org from userID if the account is an org
 def getOrgFromOwnerID(id):
     org = Organization.objects.filter(ownerID=id).first()
     print(org)
@@ -341,6 +346,7 @@ def getOrgFromOwnerID(id):
     }
     return org_info_dict
 
+# Used to update target account in db
 def update_account_details(request):
     authID = request.POST.get("authID")
     authUser = User.objects.get(id=authID)
@@ -386,7 +392,7 @@ def update_account_details(request):
         # org.description = request.POST.get("description")
         # org.save()
 
-# returns list of comments from an events page
+# returns list of comments from an events page. Also posts any comments if sumbitted to event-details.html
 def load_n_post_comments(request):
     eventID = request.POST.get('eventID')
     if request.POST.get('commentSubmit') == 'true':
