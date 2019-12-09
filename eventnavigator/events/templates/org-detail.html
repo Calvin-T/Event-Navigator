@@ -67,6 +67,7 @@
                 </li>
               </ul>
               <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+                <a class="p-2 bd-highlight" style="cursor:default; color:white;">Hello, {{user.username}} </a>
                 <a class="nav-link" href="{% url 'events-logout' %}">Logout</a>
               </ul>
                 {% else %}
@@ -157,7 +158,7 @@
                  });
               });
 
-              function sendGetRequest(path, params, method='GET') {
+              function sendGetRequest(path, params, method='POST') {
                 const form = document.createElement('form');
                 form.method = method;
                 form.action = path;

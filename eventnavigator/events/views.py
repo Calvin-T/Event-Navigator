@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 from django.contrib import messages
 from .db_manage import *
 import datetime
+from .forms import CommentForm
 
 @csrf_exempt
 def home(request):
@@ -47,25 +48,29 @@ def register(request):
             return redirect('events-login')
     return render(request, 'register.html')
 
+@csrf_exempt
 def event_details(request):
+    loggedin = 'false'
     if request.user.is_authenticated:
-        print("Logged in EVENT D")
+        loggedin = 'true'
         print(request.user.username)
     else:
         print("Not logged in EVENT D")
-    id = request.GET.get("eventID")
-    print(id)
+    id = request.POST.get("eventID")
+    if not id:
+        return home(request)
     event = get_event_details(id)
     long = event['long']
     lat = event['lat']
     link = "https://api.mapbox.com/v4/mapbox.streets/pin-m-marker+285A98({},{})/{},{},15/600x300@2x.png?access_token=pk.eyJ1IjoiY3RhbmcxOTk4IiwiYSI6ImNrMm10MXl2YjBsZmIzbXQ1NW15YW15OTIifQ.tethu75zoCk5OiHARIYZ9A".format(long, lat, long, lat)
-    print(link)
+    #print(link)
     image = event['image']
-    print(image)
+    #print(image)
     hasImage = True
     if image == '':
         hasImage = False
-    return render(request, 'event-detail.html', {'event': event , 'map_link': link, 'hasImage': hasImage})
+    comments = load_n_post_comments(request)
+    return render(request, 'event-detail.html', {'event': event , 'map_link': link, 'hasImage': hasImage, 'loggedin':loggedin, 'comments': comments})
 
 def org_details(request):
     if request.user.is_authenticated:

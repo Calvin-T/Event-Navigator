@@ -61,6 +61,7 @@
                 </li>
               </ul>
               <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+                <a class="p-2 bd-highlight" style="cursor:default; color:white;">Hello, {{user.username}} </a>
                 <a class="nav-link" href="{% url 'events-logout' %}">Logout</a>
               </ul>
                 {% else %}
@@ -113,7 +114,34 @@
 
           <div class="col-md-3">
             <div class="card">
-              Comments
+              <h4 id="title">Comments</h4>
+              <table id="events_table" class="table" >
+                <tbody>
+                  {% for comment in comments %}
+
+                   <div class="comments" style="padding: 1px;">
+                      <p class="font-weight-bold">
+                        {{ comment.username }}
+                        <span class=" text-muted font-weight-normal">
+                          {{ comment.time }}
+                        </span>
+                      </p>
+                      {{ comment.body | linebreaks }}
+                    </div>
+
+                    {% endfor %}
+                  </tbody>
+              </table>
+                  {% if loggedin == "true" %}
+                  <form method ="POST" action="event-details" id ="commentForm">
+                    <textarea rows="3" cols="25" id="comment_content" name="comment" form="commentForm" autofocus>
+                    </textarea>
+                    <input type="hidden" id="eventID" name="eventID" value="{{event.id}}" >
+                    <input type="hidden" id="commentSubmit" name="commentSubmit" value="true" >
+                  </form>
+
+                  <button form="commentForm" type="submit" value="Submit" class= "btn btn-default">Comment!</button>
+                {% endif %}
             </div>
           </div>
 

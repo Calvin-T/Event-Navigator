@@ -29,41 +29,24 @@
         </button>
         <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
             <ul class="navbar-nav w-100 justify-content-center">
-                <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'events-home' %}">Events<span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'events-home' %}">Events</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-organizations' %}">Organizations</a>
                 </li>
-                {% if user.is_authenticated %}
-                {% if hasOrg %}
-                <li class="nav-item">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events-add-event' %}">Add Event</a>
-                  </li>
-                </li>
-                {% endif %}
-                <li class="nav-item">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events-account-detail' %}">Account</a>
-                  </li>
-                </li>
-              </ul>
-              <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-                <a class="p-2 bd-highlight" style="cursor:default; color:white;">Hello, {{user.username}} </a>
-                <a class="nav-link" href="{% url 'events-logout' %}">Logout</a>
-              </ul>
-                {% else %}
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'events-login' %}">Login</a>
+                <li class="nav-item active">
+                  <a class="nav-link" href="{% url 'events-login' %}">Login<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-register' %}">Register</a>
                 </li>
-              </ul>
-              <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-              </ul>
-                {% endif %}
+            </ul>
+            <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+              <form class="form-inline">
+                
+              </form>
+            </ul>
         </div>
     </nav>
 
@@ -72,9 +55,29 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-          <div class="card my-5">
-            <p>You are logged out!</p>
-            <a  href="{% url 'login' %}">Log in again</a>
+          <div class="card card-signin my-5">
+            <div class="card-body">
+              <h5 class="card-title text-center">Sign In</h5>
+              <form class="form-signin">
+                <div class="form-label-group">
+                  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+                  <label for="inputEmail">Email address</label>
+                </div>
+
+                <div class="form-label-group">
+                  <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                  <label for="inputPassword">Password</label>
+                </div>
+
+                <div class="custom-control custom-checkbox mb-3">
+                  <input type="checkbox" class="custom-control-input" id="customCheck1">
+                  <label class="custom-control-label" for="customCheck1">Remember password</label>
+                  <a href="" style="float:right;">Forgot password?</a>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign in</button>
+                <a class="nav-link" href="{% url 'events-register' %}" style="text-align: center; padding-bottom:0px; padding-top:15px;">Create an account</a>
+              </form>
+            </div>
           </div>
         </div>
       </div>
