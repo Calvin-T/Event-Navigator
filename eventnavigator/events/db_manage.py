@@ -267,7 +267,8 @@ def get_event_details(id):
             'long': event.longitude,
             'lat': event.latitude,
             'image': event.image,
-            'link': event.link
+            'link': event.link,
+            'id': id
         }
 
         return event_info_dict
@@ -384,3 +385,43 @@ def update_account_details(request):
         # org.website = request.POST.get("orgWebsite")
         # org.description = request.POST.get("description")
         # org.save()
+
+# returns list of comments from an events page
+def load_n_post_comments(request):
+    eventID = request.POST.get('eventID')
+    if request.POST.get('commentSubmit') == 'true':
+        body = request.POST.get('comment')
+        if not isNullOrWhiteSpace(body):
+            user_name = request.user.username
+            userId = ""
+            print("username : {}".format(user_name))
+            if not user_name:
+                user_name = "USERNAME_NOT_SET"
+                userId = 1
+            else:
+                row = Account.objects.filter(username=user_name)[0]
+                userId = row.id
+            now = datetime.utcnow()
+            comment = Comments(name=user_name,userID=userId,body=body,created=now,eventID=eventID)
+            comment.save()
+
+    comments = Comments.objects.filter(eventID=eventID)
+    comments_list = []
+    for comment in comments:
+        username=  Account.objects.filter(id=comment.userID)[0].username
+        temp = {
+            'body': comment.body,
+            'time': comment.created.strftime("%b-%d-%Y (%H:%M)"),
+            'username':username
+        }
+        comments_list.append(temp)
+    print(comments_list)
+    return comments_list
+
+#"""Indicates whether the specified string is null or empty string.
+#   Returns: True if the str parameter is null, an empty string ("") or contains
+#   whitespace. Returns false otherwise."""
+def isNullOrWhiteSpace(str):
+  if (str is None) or (str == "") or (str.isspace()):
+    return True
+  return False
