@@ -42,8 +42,8 @@
         </button>
         <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
             <ul class="navbar-nav w-100 justify-content-center">
-                <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'events-home' %}">Events<span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'events-home' %}">Events</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'events-organizations' %}">Organizations</a>
@@ -57,8 +57,8 @@
                 </li>
                 {% endif %}
                 <li class="nav-item">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events-account-detail' %}">Account</a>
+                  <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'events-account-detail' %}">Account<span class="sr-only">(current)</span></a>
                   </li>
                 </li>
               </ul>
