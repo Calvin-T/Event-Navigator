@@ -66,7 +66,7 @@ body {
   display: block;
   width: 100%;
   margin-bottom: 0;
-  /* Override default `<label>` margin */
+
   line-height: 1.5;
   color: #495057;
   border: 1px solid transparent;
@@ -94,7 +94,7 @@ body {
   color: transparent;
 }
 
-.form-label-group input:not(:placeholder-shown) {
+/* .form-label-group input:not(:placeholder-shown) {
   padding-top: calc(var(--input-padding-y) + var(--input-padding-y) * (2 / 3));
   padding-bottom: calc(var(--input-padding-y) / 3);
 }
@@ -104,6 +104,14 @@ body {
   padding-bottom: calc(var(--input-padding-y) / 3);
   font-size: 12px;
   color: #777;
+} */
+
+#id_username {
+  width: 100%;
+}
+
+#id_password {
+  width: 100%;
 }
 
 .btn-google {

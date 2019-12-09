@@ -10,3 +10,7 @@ body {
   width: fit-content;
   text-align: center;
 }
+
+.bg-dark {
+  background: rgb(33, 35, 39);
+}
