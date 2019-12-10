@@ -313,8 +313,26 @@ def update_event_details(request, id):
 
     dt2 = datetime.combine(date_object, time_object)
 
+    if dt > dt2:
+        print("START TIME > END TIME")
+        create_event_results = {
+            'status': "error",
+            'message': "Start time later than end time."
+        }
+        return create_event_results
+
+
     event.date = dt
     event.end_date = dt2
+
+    if Event.objects.filter(Q(name=event.name) and Q(organization=event.host_org) and Q(date=dt)).exclude(id=id).count() > 0:
+        print("DUPLICATE EVENT")
+        create_event_results = {
+            'status': "error",
+            'message': "Event already exists!"
+        }
+        return create_event_results
+
 
     event.save()
     create_event_results = {
@@ -357,6 +375,13 @@ def update_account_details(request):
     username = request.POST.get("inputUsername")
     email = request.POST.get("inputEmail")
 
+    if Account.objects.filter(Q(username=username) or Q(email=email)).exclude(id=userID).count() > 0:
+        update_account = {
+            'status': "error",
+            'message': "Username or email already exists!"
+        }
+        return update_account
+
     authUser.username = username
     authUser.email = email
     authUser.save()
@@ -373,6 +398,12 @@ def update_account_details(request):
 
     if isOrg[0]:
         org = Organization.objects.get(ownerID=userID)
+        if Organization.objects.filter(Q(name=request.POST.get("orgName"))).exclude(ownerID=userID).count() > 0:
+            update_account = {
+                'status': "error",
+                'message': "Org name already exists!"
+            }
+            return update_account
         events = Event.objects.filter(host_org=org.name)
         for event in events:
             event.host_org = request.POST.get("orgName")
@@ -386,6 +417,11 @@ def update_account_details(request):
         print(image)
         org = Organization(name=request.POST.get("orgName"), location=request.POST.get("orgLocation"),website=request.POST.get("orgWebsite"),description=request.POST.get("description"),ownerID=userID, image=image)
         org.save()
+        update_account = {
+            'status': "success",
+            'message': "Successfully updated!"
+        }
+        return update_account
         # org.name = request.POST.get("orgName")
         # org.location = request.POST.get("orgLocation")
         # org.website = request.POST.get("orgWebsite")

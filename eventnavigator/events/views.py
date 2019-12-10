@@ -160,6 +160,10 @@ def edit_event(request):
             storage = messages.get_messages(request)
             storage.used = True
             messages.success(request, 'Changes saved')
+        else:
+            storage = messages.get_messages(request)
+            storage.used = True
+            messages.error(request, 'Duplicate event')
         event = get_event_details(id)
         image = event['image']
         #start_date = event['start_date'].date()
@@ -239,5 +243,9 @@ def edit_account(request):
 
         return render(request, 'edit-account.html', {'username': username, 'email': email,'isOrg':isOrg[0], 'org': org, 'userID': userID, 'authID': authID, 'hasImage': hasImage})
     else:
-        update_account_details(request)
+        result = update_account_details(request)
+        if result['status'] == "error":
+            messages.error(request, result['message'])
+        else:
+            messages.success(request, 'Successfully updated!')
         return redirect('events-account-detail')
