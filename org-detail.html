@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Event Navigator | Organization</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/main.css' %}" />
+    <link rel = "stylesheet" type = "text/css" href = "{% static 'styles/org-detail.css' %}" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design for Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.16/css/mdb.min.css" rel="stylesheet">
+    <!-- Datatables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+
+  </head>
+  <style>
+    tr[data-href] {
+       cursor: pointer;
+    }
+  </style>
+
+  <body>
+
+    <!-- bootstrap js, jquery, popper js -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.16/js/mdb.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
+
+    <nav class="navbar navbar-dark navbar-expand-md bg-faded justify-content-center">
+        <a class="navbar-brand d-flex w-50 mr-auto" style="cursor:default; color:white;">EventNavigator</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar3">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+            <ul class="navbar-nav w-100 justify-content-center">
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'events-home' %}">Events</a>
+                </li>
+                <li class="nav-item active">
+                  <a class="nav-link" href="{% url 'events-organizations' %}">Organizations<span class="sr-only">(current)</span></a>
+                </li>
+                {% if user.is_authenticated %}
+                {% if isOrg %}
+                <li class="nav-item">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'events-add-event' %}">Add Event</a>
+                  </li>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'events-account-detail' %}">Account</a>
+                  </li>
+                </li>
+              </ul>
+              <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+                <a class="p-2 bd-highlight" style="cursor:default; color:white;">Hello, {{user.username}} </a>
+                <a class="nav-link" href="{% url 'events-logout' %}">Logout</a>
+              </ul>
+                {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'events-login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'events-register' %}">Register</a>
+                </li>
+              </ul>
+              <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+              </ul>
+                {% endif %}
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <!-- Portfolio Item Row -->
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card">
+              <h2 class="my-2">{{info.orgName}}</h2>
+              {% if hasImage %}
+              <img class="img-fluid" src="media/{{ info.image }}" alt="" id="event-image">
+              {% endif %}
+              {% if info.orgWebsite %}
+              <h5 class="my-2">Link: <a href="{{info.orgWebsite}}" style="color:blue;">{{info.orgWebsite}}</a></h5>
+              {% endif %}
+              <hr style="width: 100%; color: white; height: 1px; background-color:white;" />
+              <p>{{info.orgDescription}}</p>
+            </div>
+          </div>
+
+          <div class="col-md-8">
+            <div class="card">
+              <table id="events_table" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>eventID</th>
+                        <th>Name</th>
+                        <th>Time</th>
+                        <th>Location</th>
+                        {% if isOwner %}
+                        <th>Edit</th>
+                        <th>Delete</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for event in events %}
+                       <tr data-href="event-details">
+                         <td>{{ event.eventID }}</td>
+                         <td>{{ event.eventName}}</td>
+                         <td>{{ event.eventDate}}</td>
+                         <td>{{ event.eventLocation}}</td>
+                         {% if isOwner %}
+                         <td>
+                           <form class="flex-container" method="GET" action="{% url 'events-edit-event' %}" >
+                            {% csrf_token %}
+                            <div class="input-group">
+                              <input type="hidden" name="eventID" value="{{event.eventID}}">
+                              <button name="edit" type="submit" class="btn btn-outline-primary waves-effect btn-sm">Edit</button>
+                            </div>
+                            </form>
+                         </td>
+                         <td>
+                           <form class="flex-container" method="POST" >
+                            {% csrf_token %}
+                            <div class="input-group">
+                              <input type="hidden" name="eventID" value="{{event.eventID}}">
+                              <button name="delete" type="submit" class="btn btn-outline-danger waves-effect btn-sm">Delete</button>
+                            </div>
+                            </form>
+                         </td>
+                         {% endif %}
+                        </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <script>
+
+              document.addEventListener("DOMContentLoaded", (event) => {
+                 const rows = document.querySelectorAll("tr[data-href]");
+                 rows.forEach(row => {
+                   row.addEventListener("click", (event) => {
+                      var index = event.target.parentElement.rowIndex;
+                      var myTable = document.getElementById("events_table");
+                      var rows = myTable.getElementsByTagName("tr");
+                      var col = rows[index].getElementsByTagName("td");
+                      sendGetRequest("event-details", { eventID: col[0].innerHTML});
+                   });
+                 });
+              });
+
+
+              function sendGetRequest(path, params, method='POST') {
+                const form = document.createElement('form');
+                form.method = method;
+                form.action = path;
+
+                for (const key in params) {
+                  if (params.hasOwnProperty(key)) {
+                    const hiddenField = document.createElement('input');
+                    hiddenField.type = 'hidden';
+                    hiddenField.name = key;
+                    hiddenField.value = params[key];
+                    form.appendChild(hiddenField);
+                  }
+              }
+              document.body.appendChild(form);
+              form.submit();
+            }
+              </script>
+            </div>
+          </div>
+        </div>
+        <!-- /.row -->
+
+      </div>
+
+    </div>
+    <!-- /.container -->
+
+  </body>
+</html>
+
+<script>
+$(document).ready( function () {
+  $('#events_table').DataTable( {
+        "language": {
+            "zeroRecords": "Nothing found - sorry",
+            "infoEmpty": "No events found",
+            "infoFiltered": "(filtered from _MAX_ total records)"
+        },
+        "order": [[ 2, "asc" ]]
+    } );
+});
+</script>

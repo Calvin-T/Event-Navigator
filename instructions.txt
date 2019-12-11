@@ -5,7 +5,11 @@ INSTRUCTIONS TO INSTALL DEPENDENCIES AND RUN FOR MAC
 3. Install pipenv (virtual environment for python) with the following command: brew install pipenv
 4. Go to terminal and navigate to project folder: Event-Navigator-master
 5. Run the following command to enter the virtual environment: pipenv shell
-6. Run the following command to install all python dependencies for project: pip3 install -r requirements.txt
-7. Navigate to Event-Navigator-master/eventnavigator/
-8. Run the following command to boot up local server: python3 manage.py runserver
-9. Go to the following URL on browser: localhost:8000
+6. Run brew install mysql
+7. Run brew install mysql-connector-c
+8. Run brew install openssl
+9. Run export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
+10. Run the following command to install all python dependencies for project: pip3 install -r requirements.txt
+11. Navigate to Event-Navigator-master/eventnavigator/
+12. Run the following command to boot up local server: python3 manage.py runserver
+13. Go to the following URL on browser: localhost:8000
