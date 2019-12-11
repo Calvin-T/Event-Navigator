@@ -151,21 +151,19 @@
               </table>
               <script>
 
-                document.addEventListener("DOMContentLoaded", (event) => {
-                   const rows = document.querySelectorAll("tr[data-href]");
-                   rows.forEach(row => {
-                     row.addEventListener("click", (event) => {
-                       //index is index based 1. The zero'th index is the table column headers.
+              document.addEventListener("DOMContentLoaded", (event) => {
+                 const rows = document.querySelectorAll("tr[data-href]");
+                 rows.forEach(row => {
+                   row.addEventListener("click", (event) => {
                       var index = event.target.parentElement.rowIndex;
                       var myTable = document.getElementById("events_table");
                       var rows = myTable.getElementsByTagName("tr");
                       var col = rows[index].getElementsByTagName("td");
-                      sendGetRequest("event-details", {eventID: col[0].innerHTML});
-                     });
+                      sendGetRequest("event-details", { eventID: col[0].innerHTML});
                    });
-
                  });
               });
+
 
               function sendGetRequest(path, params, method='POST') {
                 const form = document.createElement('form');
@@ -178,12 +176,12 @@
                     hiddenField.type = 'hidden';
                     hiddenField.name = key;
                     hiddenField.value = params[key];
-
                     form.appendChild(hiddenField);
                   }
-
               }
-
+              document.body.appendChild(form);
+              form.submit();
+            }
               </script>
             </div>
           </div>
