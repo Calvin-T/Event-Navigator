@@ -4,7 +4,7 @@ geojson==2.5.0
 mysql-connector-python==8.0.18
 mysqlclient==1.4.5
 Pillow==6.2.1
-protobuf==3.10.0
+protobuf==3.15.0
 pytz==2019.3
 six==1.13.0
 sqlparse==0.3.0
